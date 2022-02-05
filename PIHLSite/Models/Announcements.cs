@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace PIHLSite.Models
 {
-    public class Announcement
+    public class Announcements
     {
         public int AnnouncementId { get; set; }
         public string AnnouncementBody { get; set; }
