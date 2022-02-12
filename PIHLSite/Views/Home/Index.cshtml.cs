@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using PIHLSite.Areas.Identity.Data;
 using System.Net;
 
-namespace PIHLSite.Areas.Identity.Pages.Account
+namespace PIHLSite
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
