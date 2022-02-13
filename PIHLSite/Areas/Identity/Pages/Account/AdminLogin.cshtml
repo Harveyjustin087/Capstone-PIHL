@@ -1,13 +1,14 @@
 ﻿@page
-@model LoginModel
+@model AdminLoginModel
 
 @{
-    ViewData["Title"] = "Log in";
+    ViewData["Title"] = "Admin Log in";
     Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml";
 }
 
 <div class="col-md-10 offset-md-1">
     <section>
+        <img src="~/images/admin.jpg" style="max-height:30%"/>
         <form id="account" method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">

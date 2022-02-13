@@ -1,6 +1,39 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using PIHLSite.Areas.Identity.Data
+
+@inject SignInManager<PIHLSiteUser> SignInManager
+@inject UserManager<PIHLSiteUser> UserManager
+@{
     ViewData["Title"] = "Home Page";
-    @model IEnumerable<PIHLSite.Models.Announcements>
+    @model IEnumerable<PIHLSite.Models.AspNetUser>
 }
 
-<h1 class="mb-3 h4 text-white">Welcome to the Paris Industrial Hockey League Homepage</h1>
+<h1 class="mb-3 h4 text-white">Welcome to the Paris Industrial Hockey League Scorekeeping Application</h1>
+@if (SignInManager.IsSignedIn(User))
+{
+    string adminUser = User.Identity.Name.ToString();
+    if (adminUser == "Christopher.Thoms@colliers.com")
+    {
+        <a class="btn btn-primary" >Add New Game</a>
+        <br />
+        <a class="btn btn-primary" >Edit Game</a>
+        <br />
+        <a class="btn btn-primary" >Delete Game</a>
+        <br/>
+        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Register New Scorekeeper</a>
+        <br />
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="Index">Scorekeeper</a>
+        <br />
+    
+    }
+    else
+    {
+        <a class="btn btn-primary" >Add New Game</a>
+        <br />
+        <a class="btn btn-primary" >Edit Game</a>
+        <br />
+        <a class="btn btn-primary" >Delete Game</a>
+        <br />
+    }
+
+}
