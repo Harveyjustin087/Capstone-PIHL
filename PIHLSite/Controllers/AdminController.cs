@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +20,14 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Admin
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             return View(await _context.AspNetUsers.ToListAsync());
         }
 
         // GET: Admin/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(string id)
         {
             if (id == null)
@@ -42,7 +45,7 @@ namespace PIHLSite.Controllers
             return View(aspNetUser);
         }
 
-        // GET: Admin/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -51,6 +54,7 @@ namespace PIHLSite.Controllers
         // POST: Admin/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount,FirstName,LastName")] AspNetUser aspNetUser)
@@ -65,6 +69,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Admin/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
@@ -85,6 +90,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount,FirstName,LastName")] AspNetUser aspNetUser)
         {
             if (id != aspNetUser.Id)
@@ -116,6 +122,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Admin/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
