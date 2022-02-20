@@ -14,24 +14,30 @@
     string adminUser = User.Identity.Name.ToString();
     if (adminUser == "Christopher.Thoms@colliers.com")
     {
-        <a class="btn btn-primary" >Add New Game</a>
+        <a class="btn btn-primary">Add New Game</a>
         <br />
-        <a class="btn btn-primary" >Edit Game</a>
         <br />
-        <a class="btn btn-primary" >Delete Game</a>
-        <br/>
-        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Register New Scorekeeper</a>
+        <a class="btn btn-primary">Edit Game</a>
+        <br />
+        <br />
+        <a class="btn btn-primary">Delete Game</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="Create">Register New Scorekeeper</a>
+        <br />
         <br />
         <a class="btn btn-primary" asp-controller="Admin" asp-action="Index">Scorekeeper</a>
         <br />
     }
     else
     {
-        <a class="btn btn-primary" >Add New Game</a>
+        <a class="btn btn-primary">Add New Game</a>
         <br />
-        <a class="btn btn-primary" >Edit Game</a>
         <br />
-        <a class="btn btn-primary" >Delete Game</a>
+        <a class="btn btn-primary">Edit Game</a>
+        <br />
+        <br />
+        <a class="btn btn-primary">Delete Game</a>
         <br />
     }
 
