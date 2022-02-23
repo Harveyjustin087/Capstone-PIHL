@@ -1,0 +1,59 @@
+﻿@model IEnumerable<PIHLSite.Models.Game>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.GameDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HomeScoreTotal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OppScoreTotal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AwayTeamId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HomeTeamId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HomeScoreTotal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OppScoreTotal)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AwayTeamId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HomeTeamId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.GameId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.GameId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.GameId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

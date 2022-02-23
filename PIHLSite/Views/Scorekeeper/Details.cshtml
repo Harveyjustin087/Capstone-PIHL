@@ -1,0 +1,48 @@
+﻿@model PIHLSite.Models.Game
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Game</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.GameDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GameDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HomeScoreTotal)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HomeScoreTotal)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.OppScoreTotal)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.OppScoreTotal)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AwayTeamId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AwayTeamId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.HomeTeamId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.HomeTeamId)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.GameId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
