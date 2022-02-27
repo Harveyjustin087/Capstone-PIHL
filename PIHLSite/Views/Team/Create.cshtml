@@ -1,0 +1,57 @@
+﻿@model PIHLSite.Models.Team
+
+@{
+    ViewData["Title"] = "Create";
+}
+<div class="bg-white border border-primary rounded">
+    <h1>Create A New Team</h1>
+
+    <h4>Team</h4>
+    <hr />
+    <div class="row">
+        <div class="mx-auto">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Company" class="control-label"></label>
+                    <input asp-for="Company" class="form-control" />
+                    <span asp-validation-for="Company" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Win" class="control-label"></label>
+                    <input asp-for="Win" class="form-control" />
+                    <span asp-validation-for="Win" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Loss" class="control-label"></label>
+                    <input asp-for="Loss" class="form-control" />
+                    <span asp-validation-for="Loss" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Otl" class="control-label"></label>
+                    <input asp-for="Otl" class="form-control" />
+                    <span asp-validation-for="Otl" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="SeasonId" class="control-label"></label>
+                    <select asp-for="SeasonId" class="form-control" asp-items="ViewBag.SeasonId"></select>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

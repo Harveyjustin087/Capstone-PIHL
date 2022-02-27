@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using PIHLSite.Areas.Identity.Data
+
+@inject SignInManager<PIHLSiteUser> SignInManager
+@inject UserManager<PIHLSiteUser> UserManager
+@{
+    ViewData["Title"] = "Home Page";
+    @model IEnumerable<PIHLSite.Models.AspNetUser>
+}
+
+<h1 class="mb-3 h4 text-white">Welcome to the Paris Industrial Hockey League Scorekeeping Application</h1>
+@if (SignInManager.IsSignedIn(User))
+{
+    string adminUser = User.Identity.Name.ToString();
+    if (adminUser == "christopher.thoms@colliers.com")
+    {
+        
+        <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">View Games</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Team" asp-action="Index">Manage Teams</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="Create">Register New Scorekeeper</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Admin" asp-action="Index">Scorekeeper Changes</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Player" asp-action="Index">Update Players</a>
+    }
+    else
+    {
+        <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">Game Management</a>
+        <br />
+        <br />
+    }
+}
+else
+{
+    <div>
+        <img src="~/images/goalie2.gif" alt="Goalie" class="border border-warning rounded" />
+    </div>
+}
