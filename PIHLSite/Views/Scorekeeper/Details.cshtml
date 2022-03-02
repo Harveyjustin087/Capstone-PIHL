@@ -3,46 +3,60 @@
 @{
     ViewData["Title"] = "Details";
 }
+<div class="bg-white border border-primary rounded">
+    <div class="container">
+        <h1>Scoreboard</h1>
+        <h2>Game Number: @Html.DisplayFor(modelItem => modelItem.GameId)</h2>
+        <hr />
+        @if(Model.Finalized == true)
+            {
+                <h4>Final Score</h4>
+            }
+            else
+            {
+                <h4>Game In Progress</h4>
+            }
+        <div class="row">
+            <div class="col-lg-2"><h4>Home Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.HomeScoreTotal)</h1></div>
+            <div class="col-lg-8" style=" text-align: center; color: white"><h2>Score Board</h2> </div>
+            <div class="col-lg-2"><h4>Away Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.AwayScoreTotal)</h1></div>
 
-<h1>Details</h1>
+        </div>
+        <hr />
+        <br />
+        <div class="row">
+            <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.HomeTeam.Name)</h1></div>
+            <div class="col-lg-8" style=" text-align: center;"><h2>   Teams   </h2> </div>
+            <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.AwayTeam.Name)</h1></div>
 
-<div>
-    <h4>Game</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GameDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GameDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HomeScoreTotal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HomeScoreTotal)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OppScoreTotal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OppScoreTotal)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AwayTeamId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AwayTeamId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.HomeTeamId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.HomeTeamId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.GameId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+        </div>
+        <hr />
+        <div class="row">
+            @{ if (Model.HomeTeamId == 1)
+                {
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
+else if (Model.HomeTeamId == 2)
+{
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> }
+
+    <div class="col-lg-8" style=" text-align: center;color:white"><h2>   Jerseys   </h2> </div> if (Model.AwayTeamId == 1)
+    {
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
+else if (Model.AwayTeamId == 2)
+{
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> } }
+
+        </div>
+        <h1>Played On: @Html.DisplayFor(modelItem => modelItem.GameDate)</h1>
+        <div class="mb-1">
+            <hr />
+            <a asp-action="Index" class="btn btn-primary">Back to List</a>
+            <a a asp-controller="Scorekeeper" asp-action="Edit" class="btn btn-primary" asp-route-id="@Model.GameId">Edit</a>
+            <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Index" class="btn btn-primary">View Goals</a>
+            <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Create" class="btn btn-primary">Add A Goal</a>
+            <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Index" class="btn btn-primary">View Penalties</a>
+            <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Create" class="btn btn-primary">Add Penalty</a>
+            <a asp-controller="Scorekeeper" asp-route-id="@Model.GameId" asp-action="Finalize" class="btn btn-primary">Finalize Game</a>
+        </div>
+    </div>
 </div>

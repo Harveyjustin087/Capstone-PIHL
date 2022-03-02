@@ -18,7 +18,6 @@ using PIHLSite.Areas.Identity.Data;
 
 namespace PIHLSite.Areas.Identity.Pages.Account
 {
-    [Authorize]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<PIHLSiteUser> _signInManager;

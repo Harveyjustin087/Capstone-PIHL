@@ -8,7 +8,7 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-controller="Home" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+        <a id="manage" class="nav-link text-dark" asp-controller="Home" asp-action="Index" title="Manage">Hello @UserManager.GetUserName(User)! |</a>
     </li>
     <li class="nav-item">
         <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
@@ -19,8 +19,10 @@
 else
 {
 <li class="nav-item">
-    <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/AdminLogin">Adminstrator Login</a>
-    <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/ScorekeeperLogin">Scorekeeper Login</a>
+    <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/AdminLogin"> Administrator Login </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/ScorekeeperLogin"> Scorekeeper Login</a>
 </li>
 }
 </ul>

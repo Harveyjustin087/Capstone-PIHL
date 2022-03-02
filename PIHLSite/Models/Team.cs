@@ -9,7 +9,8 @@ namespace PIHLSite.Models
     {
         public Team()
         {
-            GameTeams = new HashSet<GameTeam>();
+            GameAwayTeams = new HashSet<Game>();
+            GameHomeTeams = new HashSet<Game>();
             Players = new HashSet<Player>();
         }
 
@@ -22,7 +23,8 @@ namespace PIHLSite.Models
         public int SeasonId { get; set; }
 
         public virtual Season Season { get; set; }
-        public virtual ICollection<GameTeam> GameTeams { get; set; }
+        public virtual ICollection<Game> GameAwayTeams { get; set; }
+        public virtual ICollection<Game> GameHomeTeams { get; set; }
         public virtual ICollection<Player> Players { get; set; }
     }
 }

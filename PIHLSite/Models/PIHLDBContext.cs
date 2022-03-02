@@ -25,7 +25,6 @@ namespace PIHLSite.Models
         public virtual DbSet<AspNetUserRole> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
         public virtual DbSet<Game> Games { get; set; }
-        public virtual DbSet<GameTeam> GameTeams { get; set; }
         public virtual DbSet<GoalRecord> GoalRecords { get; set; }
         public virtual DbSet<Penalty> Penalties { get; set; }
         public virtual DbSet<PenaltyRecord> PenaltyRecords { get; set; }
@@ -38,7 +37,7 @@ namespace PIHLSite.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS21;Database=PIHL;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS21;Database=PIHLDB;Trusted_Connection=True;");
             }
         }
 
@@ -48,10 +47,6 @@ namespace PIHLSite.Models
 
             modelBuilder.Entity<AspNetRole>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedName] IS NOT NULL)");
-
                 entity.Property(e => e.Name).HasMaxLength(256);
 
                 entity.Property(e => e.NormalizedName).HasMaxLength(256);
@@ -59,9 +54,9 @@ namespace PIHLSite.Models
 
             modelBuilder.Entity<AspNetRoleClaim>(entity =>
             {
-                entity.HasIndex(e => e.RoleId, "IX_AspNetRoleClaims_RoleId");
-
-                entity.Property(e => e.RoleId).IsRequired();
+                entity.Property(e => e.RoleId)
+                    .IsRequired()
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.AspNetRoleClaims)
@@ -70,12 +65,6 @@ namespace PIHLSite.Models
 
             modelBuilder.Entity<AspNetUser>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedEmail, "EmailIndex");
-
-                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
-
                 entity.Property(e => e.Email).HasMaxLength(256);
 
                 entity.Property(e => e.FirstName).HasMaxLength(100);
@@ -91,9 +80,9 @@ namespace PIHLSite.Models
 
             modelBuilder.Entity<AspNetUserClaim>(entity =>
             {
-                entity.HasIndex(e => e.UserId, "IX_AspNetUserClaims_UserId");
-
-                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserClaims)
@@ -104,9 +93,9 @@ namespace PIHLSite.Models
             {
                 entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
 
-                entity.HasIndex(e => e.UserId, "IX_AspNetUserLogins_UserId");
-
-                entity.Property(e => e.UserId).IsRequired();
+                entity.Property(e => e.UserId)
+                    .IsRequired()
+                    .HasMaxLength(450);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.AspNetUserLogins)
@@ -116,8 +105,6 @@ namespace PIHLSite.Models
             modelBuilder.Entity<AspNetUserRole>(entity =>
             {
                 entity.HasKey(e => new { e.UserId, e.RoleId });
-
-                entity.HasIndex(e => e.RoleId, "IX_AspNetUserRoles_RoleId");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.AspNetUserRoles)
@@ -141,49 +128,32 @@ namespace PIHLSite.Models
             {
                 entity.ToTable("Game");
 
-                entity.Property(e => e.GameId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("GameID");
+                entity.Property(e => e.GameId).HasColumnName("GameID");
 
                 entity.Property(e => e.AwayTeamId).HasColumnName("AwayTeamID");
 
                 entity.Property(e => e.GameDate).HasColumnType("date");
 
                 entity.Property(e => e.HomeTeamId).HasColumnName("HomeTeamID");
-            });
 
-            modelBuilder.Entity<GameTeam>(entity =>
-            {
-                entity.ToTable("GameTeam");
-
-                entity.Property(e => e.GameTeamId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("GameTeamID");
-
-                entity.Property(e => e.GameId).HasColumnName("GameID");
-
-                entity.Property(e => e.TeamId).HasColumnName("TeamID");
-
-                entity.HasOne(d => d.Game)
-                    .WithMany(p => p.GameTeams)
-                    .HasForeignKey(d => d.GameId)
+                entity.HasOne(d => d.AwayTeam)
+                    .WithMany(p => p.GameAwayTeams)
+                    .HasForeignKey(d => d.AwayTeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GameTeam__GameID__7B5B524B");
+                    .HasConstraintName("FK__Game__AwayTeamID__2E1BDC42");
 
-                entity.HasOne(d => d.Team)
-                    .WithMany(p => p.GameTeams)
-                    .HasForeignKey(d => d.TeamId)
+                entity.HasOne(d => d.HomeTeam)
+                    .WithMany(p => p.GameHomeTeams)
+                    .HasForeignKey(d => d.HomeTeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GameTeam__TeamID__7C4F7684");
+                    .HasConstraintName("FK__Game__HomeTeamID__2F10007B");
             });
 
             modelBuilder.Entity<GoalRecord>(entity =>
             {
                 entity.ToTable("GoalRecord");
 
-                entity.Property(e => e.GoalRecordId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("GoalRecordID");
+                entity.Property(e => e.GoalRecordId).HasColumnName("GoalRecordID");
 
                 entity.Property(e => e.FirstAssistPlayerId).HasColumnName("FirstAssistPlayerID");
 
@@ -198,24 +168,24 @@ namespace PIHLSite.Models
                 entity.HasOne(d => d.FirstAssistPlayer)
                     .WithMany(p => p.GoalRecordFirstAssistPlayers)
                     .HasForeignKey(d => d.FirstAssistPlayerId)
-                    .HasConstraintName("FK__GoalRecor__First__05D8E0BE");
+                    .HasConstraintName("FK__GoalRecor__First__38996AB5");
 
                 entity.HasOne(d => d.Game)
                     .WithMany(p => p.GoalRecords)
                     .HasForeignKey(d => d.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GoalRecor__GameI__03F0984C");
+                    .HasConstraintName("FK__GoalRecor__GameI__36B12243");
 
                 entity.HasOne(d => d.ScoringPlayer)
                     .WithMany(p => p.GoalRecordScoringPlayers)
                     .HasForeignKey(d => d.ScoringPlayerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__GoalRecor__Scori__04E4BC85");
+                    .HasConstraintName("FK__GoalRecor__Scori__37A5467C");
 
                 entity.HasOne(d => d.SecondAssistPlayer)
                     .WithMany(p => p.GoalRecordSecondAssistPlayers)
                     .HasForeignKey(d => d.SecondAssistPlayerId)
-                    .HasConstraintName("FK__GoalRecor__Secon__06CD04F7");
+                    .HasConstraintName("FK__GoalRecor__Secon__398D8EEE");
             });
 
             modelBuilder.Entity<Penalty>(entity =>
@@ -242,9 +212,7 @@ namespace PIHLSite.Models
             {
                 entity.ToTable("PenaltyRecord");
 
-                entity.Property(e => e.PenaltyRecordId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("PenaltyRecordID");
+                entity.Property(e => e.PenaltyRecordId).HasColumnName("PenaltyRecordID");
 
                 entity.Property(e => e.GameId).HasColumnName("GameID");
 
@@ -260,28 +228,26 @@ namespace PIHLSite.Models
                     .WithMany(p => p.PenaltyRecords)
                     .HasForeignKey(d => d.GameId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PenaltyRe__GameI__17036CC0");
+                    .HasConstraintName("FK__PenaltyRe__GameI__31EC6D26");
 
                 entity.HasOne(d => d.Penalty)
                     .WithMany(p => p.PenaltyRecords)
                     .HasForeignKey(d => d.PenaltyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PenaltyRe__Penal__01142BA1");
+                    .HasConstraintName("FK__PenaltyRe__Penal__33D4B598");
 
                 entity.HasOne(d => d.Player)
                     .WithMany(p => p.PenaltyRecords)
                     .HasForeignKey(d => d.PlayerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__PenaltyRe__Playe__00200768");
+                    .HasConstraintName("FK__PenaltyRe__Playe__32E0915F");
             });
 
             modelBuilder.Entity<Player>(entity =>
             {
                 entity.ToTable("Player");
 
-                entity.Property(e => e.PlayerId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("PlayerID");
+                entity.Property(e => e.PlayerId).HasColumnName("PlayerID");
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
@@ -303,16 +269,14 @@ namespace PIHLSite.Models
                     .WithMany(p => p.Players)
                     .HasForeignKey(d => d.TeamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Player__TeamID__76969D2E");
+                    .HasConstraintName("FK__Player__TeamID__2B3F6F97");
             });
 
             modelBuilder.Entity<Season>(entity =>
             {
                 entity.ToTable("Season");
 
-                entity.Property(e => e.SeasonId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("SeasonID");
+                entity.Property(e => e.SeasonId).HasColumnName("SeasonID");
 
                 entity.Property(e => e.EndYear).HasColumnType("date");
 
@@ -323,9 +287,7 @@ namespace PIHLSite.Models
             {
                 entity.ToTable("Team");
 
-                entity.Property(e => e.TeamId)
-                    .ValueGeneratedNever()
-                    .HasColumnName("TeamID");
+                entity.Property(e => e.TeamId).HasColumnName("TeamID");
 
                 entity.Property(e => e.Company)
                     .IsRequired()
@@ -345,7 +307,7 @@ namespace PIHLSite.Models
                     .WithMany(p => p.Teams)
                     .HasForeignKey(d => d.SeasonId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Team__SeasonID__73BA3083");
+                    .HasConstraintName("FK__Team__SeasonID__286302EC");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -1,0 +1,70 @@
+﻿@model PIHLSite.Models.Player
+
+@{
+    ViewData["Title"] = "Delete";
+}
+<div class="bg-white border border-primary rounded">
+    <h1>Delete Player</h1>
+
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <h4>Player</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.FirstName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.FirstName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.LastName)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.LastName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Age)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Age)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ScoreTotal)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ScoreTotal)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.AssistTotal)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.AssistTotal)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PointTotal)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PointTotal)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Pimtotal)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Pimtotal)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Team)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Team.Company)
+            </dd>
+        </dl>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="PlayerId" />
+            <input type="submit" value="Delete" class="btn btn-danger" /> |
+            <a asp-action="Index">Back to List</a>
+        </form>
+    </div>
+</div>
