@@ -242,106 +242,136 @@ namespace PIHLSite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var gameRecord = await _context.Games.FindAsync(id);
+            // Team stats
             var awayTeamRecord = await _context.Set<Team>().FirstOrDefaultAsync(o => o.TeamId == gameRecord.AwayTeamId);
             var homeTeamRecord = await _context.Set<Team>().FirstOrDefaultAsync(o => o.TeamId == gameRecord.HomeTeamId);
-            var penaltyRecord = await _context.Set<PenaltyRecord>().FirstOrDefaultAsync(o => o.GameId == gameRecord.GameId);
+            // multiple goal and penalty records
+            var penaltyRecords = await _context.PenaltyRecords.Where(o => o.GameId == id).ToListAsync();
+            var goalRecords = await _context.GoalRecords.Where(o => o.GameId == id).ToListAsync();
+           
 
             if (gameRecord == null)
             {
                 return NotFound();
             }
             //Readjust Player Stats
-            var goalRecord = await _context.Set<GoalRecord>().FirstOrDefaultAsync(o => o.GameId == gameRecord.GameId);
-            if (goalRecord != null)
+            if (goalRecords.Count != 0)
             {
-                var scoringPlayerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.ScoringPlayerId);
-                var firstAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.FirstAssistPlayerId);
-                var secondAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.SecondAssistPlayerId);
-                if (scoringPlayerRecord.TeamId == gameRecord.AwayTeamId)
+                foreach (var goal in goalRecords)
                 {
-                    gameRecord.AwayScoreTotal = gameRecord.AwayScoreTotal - 1;
-                }
-                else if (scoringPlayerRecord.TeamId == gameRecord.HomeTeamId)
-                {
-                    gameRecord.HomeScoreTotal = gameRecord.HomeScoreTotal - 1;
-                }
-                if (scoringPlayerRecord.PlayerId == goalRecord.ScoringPlayerId)
-                {
+                    //Get Player Records
+                    var scoringPlayerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goal.ScoringPlayerId);
+                    var firstAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goal.FirstAssistPlayerId);
+                    var secondAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goal.SecondAssistPlayerId);
+                   //Adjust stats removing goals and assists
+                    if (scoringPlayerRecord.PlayerId == goal.ScoringPlayerId)
+                    {
 
-                    scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
-                    scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
+                        scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
+                        scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
+                    }
+                    if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                    {
+
+                        firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                        firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                    }
+                    if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                    {
+
+                        secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                        secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                    }
+                    try
+                    {
+                        //Update Player Scoring Stats
+                        _context.Update(scoringPlayerRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(firstAssistRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(secondAssistRecord);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
                 }
-                if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
-                {
+              
+            }
+            //Adjust Penalty stats
+            if (penaltyRecords.Count != 0)
+            {
+                foreach(var penalty in penaltyRecords) {
+                    //Get Player penalty record
+                    var playerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == penalty.PlayerId);
+                    if (playerRecord != null)
+                    {
+                        playerRecord.Pimtotal -= penalty.Pim;
+                    }
+                    try
+                    {
+                        //Update Player Penalty stats
+                        _context.Update(playerRecord);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
 
-                    firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                    firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
-                }
-                if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
-                {
-
-                    secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                    secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
-                }
-                try
-                {
-                    //Update Player Stats
-                    _context.Add(scoringPlayerRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Add(firstAssistRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Add(secondAssistRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception)
-                {
-
+                    }
                 }
             }
             //Readjust Team Stats
             if (gameRecord.Overtime == false)
             {
-                if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                if (gameRecord.Finalized == true)
                 {
-                    awayTeamRecord.Win--;
-                    homeTeamRecord.Loss--;
-                }
-                else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
-                {
-                    awayTeamRecord.Loss--;
-                    homeTeamRecord.Win--;
+                    if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                    {
+                        awayTeamRecord.Win--;
+                        homeTeamRecord.Loss--;
+                    }
+                    else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
+                    {
+                        awayTeamRecord.Loss--;
+                        homeTeamRecord.Win--;
+                    }
                 }
             }
             else
             {
-                if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                if (gameRecord.Finalized == true)
                 {
-                    awayTeamRecord.Win--;
-                    homeTeamRecord.Otl--;
-                }
-                else
-                {
-                    awayTeamRecord.Otl--;
-                    homeTeamRecord.Win--;
+                    if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                    {
+                        awayTeamRecord.Win--;
+                        homeTeamRecord.Otl--;
+                    }
+                    else
+                    {
+                        awayTeamRecord.Otl--;
+                        homeTeamRecord.Win--;
+                    }
                 }
             }
             try
             {
-               
+                // singular goal and penalty records
+                var deleteGoal = _context.Set<GoalRecord>().FirstOrDefaultAsync(o => o.GameId == gameRecord.GameId);
+                var deletePenalty = _context.Set<PenaltyRecord>().FirstOrDefaultAsync(o => o.GameId == gameRecord.GameId);
+
                 //Delete Goals
-                if (goalRecord != null)
+                if (deleteGoal != null)
                 {
-                    _context.GoalRecords.Where(o => o.GameId == goalRecord.GameId)
-                              .ToList().ForEach(o => _context.Remove(o));
+                    _context.GoalRecords.RemoveRange(_context.GoalRecords.Where(c => c.GameId == id));
                     await _context.SaveChangesAsync();
                 }
                 //Delete Penalty Records
-                if (penaltyRecord != null)
+                if (penaltyRecords != null)
                 {
-                    _context.PenaltyRecords.Where(o => o.GameId == penaltyRecord.GameId)
-                              .ToList().ForEach(o => _context.Remove(o));
+                    _context.PenaltyRecords.RemoveRange(_context.PenaltyRecords.Where(c => c.GameId == id));
                     await _context.SaveChangesAsync(); 
                 }
                 //Delete Game
@@ -349,10 +379,10 @@ namespace PIHLSite.Controllers
                 await _context.SaveChangesAsync();
 
                 //Update Team Stats
-                _context.Add(homeTeamRecord);
+                _context.Update(homeTeamRecord);
                 await _context.SaveChangesAsync();
 
-                _context.Add(awayTeamRecord);
+                _context.Update(awayTeamRecord);
                 await _context.SaveChangesAsync();
 
 

@@ -121,9 +121,9 @@ namespace PIHLSite.Controllers
                 catch (Exception ex)
                 {
 
-                    return RedirectToAction(nameof(Index));
+                    return Redirect(Url.Action("Index", "Scorekeeper"));
                 }
-                return RedirectToAction(nameof(Index));
+                return Redirect(Url.Action("Index", "Scorekeeper"));
             }
             ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.FirstAssistPlayerId);
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
@@ -277,9 +277,9 @@ namespace PIHLSite.Controllers
             catch (Exception ex)
             {
 
-                return RedirectToAction(nameof(Index));
+                return Redirect(Url.Action("Index","Scorekeeper"));
             }
-            return RedirectToAction(nameof(Index));
+            return Redirect(Url.Action("Index", "Scorekeeper"));
         }
 
         private bool GoalRecordExists(int id)

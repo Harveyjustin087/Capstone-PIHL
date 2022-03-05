@@ -84,9 +84,9 @@ namespace PIHLSite.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return RedirectToAction(nameof(Index));
+                    return Redirect(Url.Action("Index", "Scorekeeper"));
                 }
-                return RedirectToAction(nameof(Index));
+                return Redirect(Url.Action("Index", "Scorekeeper"));
             }
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", penaltyRecord.GameId);
             ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription", penaltyRecord.PenaltyId);
@@ -155,6 +155,7 @@ namespace PIHLSite.Controllers
         // GET: PenaltyRecord/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            
             if (id == null)
             {
                 return NotFound();
@@ -179,9 +180,29 @@ namespace PIHLSite.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var penaltyRecord = await _context.PenaltyRecords.FindAsync(id);
-            _context.PenaltyRecords.Remove(penaltyRecord);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
+            var playerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == penaltyRecord.PlayerId);
+            if (gameRecord == null)
+            {
+                return NotFound();
+            }
+            if (playerRecord != null)
+            {
+                playerRecord.Pimtotal -= penaltyRecord.Pim;
+            }
+            try
+            {
+                _context.PenaltyRecords.Remove(penaltyRecord);
+                await _context.SaveChangesAsync();
+
+                _context.Players.Add(playerRecord);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return Redirect(Url.Action("Index", "Scorekeeper"));
+            }
+            return Redirect(Url.Action("Index", "Scorekeeper"));
         }
 
         private bool PenaltyRecordExists(int id)

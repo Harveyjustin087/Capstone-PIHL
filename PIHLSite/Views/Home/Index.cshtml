@@ -14,7 +14,7 @@
     string adminUser = User.Identity.Name.ToString();
     if (adminUser == "christopher.thoms@colliers.com")
     {
-        
+
         <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">View Games</a>
         <br />
         <br />
@@ -28,6 +28,9 @@
         <br />
         <br />
         <a class="btn btn-primary" asp-controller="Player" asp-action="Index">Update Players</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Season" asp-action="Index">Update Seasons</a>
     }
     else
     {
