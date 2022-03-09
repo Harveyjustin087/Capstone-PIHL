@@ -68,6 +68,24 @@ namespace PIHLSite.Controllers
             var scoringPlayerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.ScoringPlayerId);
             var firstAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.FirstAssistPlayerId);
             var secondAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.SecondAssistPlayerId);
+            //Check for players on the same team
+            if (scoringPlayerRecord.TeamId != firstAssistRecord.TeamId)
+            {
+                TempData["Message"] = "Players Scoring the goal and Assiting must be on the same team.";
+                return RedirectToAction(nameof(Create));
+            }
+            if (scoringPlayerRecord.TeamId != secondAssistRecord.TeamId)
+            {
+                TempData["Message"] = "Players scoring the goal and assiting must be on the same team.";
+                return RedirectToAction(nameof(Create));
+            }
+            if ((scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId) || 
+                (firstAssistRecord.PlayerId == secondAssistRecord.PlayerId) || 
+                (scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId))
+            {
+                TempData["Message"] = "Players cannot assist on their own goal or have multiple assists on one goal.";
+                return RedirectToAction(nameof(Create));
+            }
             //Update Game and Player tables ones goal is scored
             if (gameRecord == null)
             {
@@ -163,7 +181,12 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == goalRecord.GameId);
+            if (gameRecord.Finalized == true)
+            {
+                TempData["Message"] = "This game is a final score you cannot change goals.";
+                return RedirectToAction(nameof(Edit));
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -227,6 +250,11 @@ namespace PIHLSite.Controllers
             if (gameRecord == null)
             {
                 return NotFound();
+            }
+            if (gameRecord.Finalized == true)
+            {
+                TempData["Message"] = "This game is a final score you cannot remove goals.";
+                return RedirectToAction(nameof(Delete));
             }
             if (scoringPlayerRecord.TeamId == gameRecord.AwayTeamId)
             {

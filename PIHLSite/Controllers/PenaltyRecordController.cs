@@ -64,6 +64,12 @@ namespace PIHLSite.Controllers
         {
             var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
             var playerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == penaltyRecord.PlayerId);
+            TimeSpan misconduct = new TimeSpan(0, 60, 0);
+            if (penaltyRecord.Pim > misconduct)
+            {
+                TempData["Message"] = "Penalty cannot excede game misconduct in PIM (60 Minutes)";
+                return RedirectToAction(nameof(Create));
+            }
             if (gameRecord == null)
             {
                 return NotFound();
@@ -125,6 +131,12 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
+            if (gameRecord.Finalized == true)
+            {
+                TempData["Message"] = "This game is a final score you cannot change penalties.";
+                return RedirectToAction(nameof(Edit));
+            }
 
             if (ModelState.IsValid)
             {
@@ -160,7 +172,7 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-
+          
             var penaltyRecord = await _context.PenaltyRecords
                 .Include(p => p.Game)
                 .Include(p => p.Penalty)
@@ -185,6 +197,11 @@ namespace PIHLSite.Controllers
             if (gameRecord == null)
             {
                 return NotFound();
+            }
+            if (gameRecord.Finalized == true)
+            {
+                TempData["Message"] = "This game is a final score you cannot change penalties.";
+                return RedirectToAction(nameof(Delete));
             }
             if (playerRecord != null)
             {
