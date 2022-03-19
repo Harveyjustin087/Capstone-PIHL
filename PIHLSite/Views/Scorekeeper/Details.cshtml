@@ -6,49 +6,164 @@
 <div class="bg-white border border-primary rounded">
     <div class="container">
         <h1>Scoreboard</h1>
-        <h1>Game Number: @Html.DisplayFor(modelItem => modelItem.GameId)</h1>
+        <h2>Game Number: @Html.DisplayFor(modelItem => modelItem.GameId)</h2>
         <hr />
+        @if(Model.Finalized == true)
+            {
+                <h4>Final Score</h4>
+            }
+            else
+            {
+                <h4>Game In Progress</h4>
+            }
         <div class="row">
-            <br />
             <div class="col-lg-2"><h4>Home Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.HomeScoreTotal)</h1></div>
-            <div class="col-lg-8" style=" text-align: center; color: white"><h1>Score Board</h1> </div>
+            <div class="col-lg-8" style=" text-align: center; color: white"><h2>Score Board</h2> </div>
             <div class="col-lg-2"><h4>Away Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.AwayScoreTotal)</h1></div>
 
         </div>
         <hr />
         <br />
-        <br />
-        <br />
         <div class="row">
             <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.HomeTeam.Name)</h1></div>
-            <div class="col-lg-8" style=" text-align: center;"><h1>   Teams   </h1> </div>
+            <div class="col-lg-8" style=" text-align: center;"><h2>   Teams   </h2> </div>
             <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.AwayTeam.Name)</h1></div>
 
         </div>
         <hr />
         <div class="row">
-            @{ if (Model.HomeTeamId == 1)
-                {
-    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
-else if (Model.HomeTeamId == 2)
-{
-    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> }
-
-    <div class="col-lg-8" style=" text-align: center;color:white"><h1>   Jerseys   </h1> </div> if (Model.AwayTeamId == 1)
-    {
-    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
-else if (Model.AwayTeamId == 2)
-{
-    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> } }
-
+            @switch (Model.HomeTeam.Name)
+            {
+                case "green":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Green":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "orange":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Orange":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "red":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/red.png" alt="HomeJersey" /></div>
+                    break;
+                case "Red":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/red.png" alt="HomeJersey" /></div>
+                    break;
+                case "blue":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/blue.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Blue":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/blue.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "pink":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/pink.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Pink":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/pink.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "black":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/black.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Black":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/black.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "white":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/white.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "White":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/white.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "yellow":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/yellow.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Yellow":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/yellow.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "purple":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/purple.jpg" alt="HomeJersey" /></div>
+                    break;
+                case "Purple":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/purple.jpg" alt="HomeJersey" /></div>
+                    break;
+                default:
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/logomissing.jpg" alt="HomeJersey" /></div>
+                    break;
+            }
+            <div class="col-lg-8" style=" text-align: center;color:white"><h2>   Jerseys   </h2></div>
+            @switch (Model.AwayTeam.Name)
+            {
+                case "green":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Green":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "orange":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Orange":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "red":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/red.png" alt="AwayJersey" /></div>
+                    break;
+                case "Red":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/red.png" alt="AwayJersey" /></div>
+                    break;
+                case "blue":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/blue.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Blue":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/blue.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "pink":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/pink.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Pink":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/pink.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "black":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/black.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Black":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/black.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "white":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/white.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "White":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/white.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "yellow":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/yellow.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Yellow":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/yellow.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "purple":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/purple.jpg" alt="AwayJersey" /></div>
+                    break;
+                case "Purple":
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/purple.jpg" alt="AwayJersey" /></div>
+                    break;
+                default:
+                    <div class="col-lg-2"><img style="max-width:60%" src="~/images/logomissing.jpg" alt="AwayJersey" /></div>
+                    break;
+            }
         </div>
-        <h1>Played On: @Html.DisplayFor(modelItem => modelItem.GameDate)</h1>
-        <div>
-            <hr />
-            <a asp-action="Edit" asp-route-id="@Model.GameId">Edit</a> |
-            <a asp-action="Index">Back to List</a> |
-            <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Index">Goals</a> |
-            <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Index">Penalties</a>
+            <h1>Played On: @Html.DisplayFor(modelItem => modelItem.GameDate)</h1>
+            <div class="mb-1">
+                <hr />
+                <a asp-action="Index" class="btn btn-primary">Back to List</a>
+                <a a asp-controller="Scorekeeper" asp-action="Edit" class="btn btn-primary" asp-route-id="@Model.GameId">Edit</a>
+                <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Index" class="btn btn-primary">View Goals</a>
+                <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Create" class="btn btn-primary">Add A Goal</a>
+                <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Index" class="btn btn-primary">View Penalties</a>
+                <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Create" class="btn btn-primary">Add Penalty</a>
+                <a asp-controller="Scorekeeper" asp-route-id="@Model.GameId" asp-action="Finalize" class="btn btn-primary">Finalize Game</a>
+            </div>
         </div>
-    </div>
 </div>

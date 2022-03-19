@@ -36,43 +36,49 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Team)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.JerseyNumber)
+                </th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Age)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ScoreTotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AssistTotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PointTotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Pimtotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Team.Name)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.PlayerId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.PlayerId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.PlayerId">Delete</a>
-                    </td>
-                </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ScoreTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AssistTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PointTotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pimtotal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.JerseyNumber)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.PlayerId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.PlayerId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.PlayerId">Delete</a>
+                </td>
+            </tr>
             }
 
         </tbody>

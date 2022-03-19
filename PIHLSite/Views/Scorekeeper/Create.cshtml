@@ -6,9 +6,9 @@
 <div class="bg-white border border-primary rounded">
     <h1>Create A Game Record</h1>
     <hr />
-    <div class="row">
-        <div class="mx-auto">
-            <form asp-action="Create">
+    <form asp-action="Create">
+        <div class="row">
+            <div class="mx-auto">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="GameDate" class="control-label"></label>
@@ -17,12 +17,12 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="HomeScoreTotal" class="control-label"></label>
-                    <input asp-for="HomeScoreTotal" class="form-control" value="0" readonly/>
+                    <input asp-for="HomeScoreTotal" class="form-control" value="0" readonly />
                     <span asp-validation-for="HomeScoreTotal" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="AwayScoreTotal" class="control-label"></label>
-                    <input asp-for="AwayScoreTotal" class="form-control" value="0" readonly/>
+                    <input asp-for="AwayScoreTotal" class="form-control" value="0" readonly />
                     <span asp-validation-for="AwayScoreTotal" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -35,13 +35,24 @@
                     <input asp-for="HomeTeamId" class="form-control" />
                     <span asp-validation-for="HomeTeamId" class="text-danger"></span>
                 </div>
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                </div>
-            </form>
+            </div>
         </div>
-    </div>
-
+        <div class="row">
+            <div class="form-group mx-auto">
+                <label asp-for="Finalized" class="control-label"></label>
+                <input asp-for="Finalized" class="form-control" value="false" readonly />
+                <span asp-validation-for="Finalized" class="text-danger"></span>
+            </div>
+            <div class="form-group mx-auto ml-1">
+                <label asp-for="Overtime" class="control-label"></label>
+                <input asp-for="Overtime" class="form-control" value="false" readonly />
+                <span asp-validation-for="Overtime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group ">
+            <input type="submit" value="Create" class="btn btn-primary" />
+        </div>
+    </form>
     <div>
         <a asp-action="Index">Back to List</a>
     </div>

@@ -9,23 +9,22 @@ using PIHLSite.Models;
 
 namespace PIHLSite.Controllers
 {
-    public class TeamController : Controller
+    public class SeasonController : Controller
     {
         private readonly PIHLDBContext _context;
 
-        public TeamController(PIHLDBContext context)
+        public SeasonController(PIHLDBContext context)
         {
             _context = context;
         }
 
-        // GET: Team
+        // GET: Season
         public async Task<IActionResult> Index()
         {
-            var pIHLDBContext = _context.Teams.Include(t => t.Season);
-            return View(await pIHLDBContext.ToListAsync());
+            return View(await _context.Seasons.ToListAsync());
         }
 
-        // GET: Team/Details/5
+        // GET: Season/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,42 +32,39 @@ namespace PIHLSite.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .Include(t => t.Season)
-                .FirstOrDefaultAsync(m => m.TeamId == id);
-            if (team == null)
+            var season = await _context.Seasons
+                .FirstOrDefaultAsync(m => m.SeasonId == id);
+            if (season == null)
             {
                 return NotFound();
             }
 
-            return View(team);
+            return View(season);
         }
 
-        // GET: Team/Create
+        // GET: Season/Create
         public IActionResult Create()
         {
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId");
             return View();
         }
 
-        // POST: Team/Create
+        // POST: Season/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TeamId,Name,Company,Win,Loss,Otl,SeasonId")] Team team)
+        public async Task<IActionResult> Create([Bind("SeasonId,StartYear,EndYear")] Season season)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(team);
+                _context.Add(season);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId", team.SeasonId);
-            return View(team);
+            return View(season);
         }
 
-        // GET: Team/Edit/5
+        // GET: Season/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -76,23 +72,22 @@ namespace PIHLSite.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams.FindAsync(id);
-            if (team == null)
+            var season = await _context.Seasons.FindAsync(id);
+            if (season == null)
             {
                 return NotFound();
             }
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId", team.SeasonId);
-            return View(team);
+            return View(season);
         }
 
-        // POST: Team/Edit/5
+        // POST: Season/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TeamId,Name,Company,Win,Loss,Otl,SeasonId")] Team team)
+        public async Task<IActionResult> Edit(int id, [Bind("SeasonId,StartYear,EndYear")] Season season)
         {
-            if (id != team.TeamId)
+            if (id != season.SeasonId)
             {
                 return NotFound();
             }
@@ -101,12 +96,12 @@ namespace PIHLSite.Controllers
             {
                 try
                 {
-                    _context.Update(team);
+                    _context.Update(season);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TeamExists(team.TeamId))
+                    if (!SeasonExists(season.SeasonId))
                     {
                         return NotFound();
                     }
@@ -117,11 +112,10 @@ namespace PIHLSite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId", team.SeasonId);
-            return View(team);
+            return View(season);
         }
 
-        // GET: Team/Delete/5
+        // GET: Season/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -129,31 +123,30 @@ namespace PIHLSite.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .Include(t => t.Season)
-                .FirstOrDefaultAsync(m => m.TeamId == id);
-            if (team == null)
+            var season = await _context.Seasons
+                .FirstOrDefaultAsync(m => m.SeasonId == id);
+            if (season == null)
             {
                 return NotFound();
             }
 
-            return View(team);
+            return View(season);
         }
 
-        // POST: Team/Delete/5
+        // POST: Season/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            _context.Teams.Remove(team);
+            var season = await _context.Seasons.FindAsync(id);
+            _context.Seasons.Remove(season);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TeamExists(int id)
+        private bool SeasonExists(int id)
         {
-            return _context.Teams.Any(e => e.TeamId == id);
+            return _context.Seasons.Any(e => e.SeasonId == id);
         }
     }
 }

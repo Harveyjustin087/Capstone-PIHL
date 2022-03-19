@@ -14,7 +14,7 @@
     string adminUser = User.Identity.Name.ToString();
     if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
     {
-        
+
         <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">View Games</a>
         <br />
         <br />
@@ -28,12 +28,17 @@
         <br />
         <br />
         <a class="btn btn-primary" asp-controller="Player" asp-action="Index">Update Players</a>
+        <br />
+        <br />
+        <a class="btn btn-primary" asp-controller="Season" asp-action="Index">Season Management</a>
     }
+
     else
     {
         <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">Game Management</a>
         <br />
         <br />
+        <img src="~/images/ranger.gif" alt="RangerGoalie" class="border border-warning rounded" />
     }
 }
 else
