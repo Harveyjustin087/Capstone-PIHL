@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIHLSite.Models;
+using Microsoft.AspNetCore.Identity;
+using PIHLSite.Areas.Identity.Data;
 
 namespace PIHLSite.Controllers
 {
@@ -19,6 +22,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal
+        [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             var pIHLDBContext = _context.GoalRecords.Include(g => g.FirstAssistPlayer).Include(g => g.Game).Include(g => g.ScoringPlayer).Include(g => g.SecondAssistPlayer).Where(o => o.GameId == id);
@@ -26,6 +30,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,6 +53,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName");
@@ -62,6 +68,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("GoalRecordId,GameId,ScoringPlayerId,FirstAssistPlayerId,SecondAssistPlayerId,Period,GameTime")] GoalRecord goalRecord)
         {
             var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == goalRecord.GameId);
@@ -133,6 +140,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -157,6 +165,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("GoalRecordId,GameId,ScoringPlayerId,FirstAssistPlayerId,SecondAssistPlayerId,Period,GameTime")] GoalRecord goalRecord)
         {
             if (id != goalRecord.GoalRecordId)
@@ -192,6 +201,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -216,6 +226,7 @@ namespace PIHLSite.Controllers
         // POST: Goal/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var goalRecord = await _context.GoalRecords.FindAsync(id);

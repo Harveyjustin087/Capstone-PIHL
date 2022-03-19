@@ -132,8 +132,7 @@ namespace PIHLSite.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        return Redirect(Url.Action("Index", "Admin"));
                     }
                 }
                 foreach (var error in result.Errors)

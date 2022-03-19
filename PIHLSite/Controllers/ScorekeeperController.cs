@@ -17,6 +17,7 @@ namespace PIHLSite.Controllers
         public ScorekeeperController(PIHLDBContext context)
         {
             _context = context;
+           
         }
      
         

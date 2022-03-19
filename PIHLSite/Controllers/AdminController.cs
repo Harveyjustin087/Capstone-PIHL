@@ -7,17 +7,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIHLSite.Models;
+using Microsoft.AspNetCore.Identity;
+using PIHLSite.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using PIHLSite.Models.ViewModel;
+using System.Security.Cryptography;
+using System.Web.Helpers;
 
 namespace PIHLSite.Controllers
 {
+
     public class AdminController : Controller
     {
         private readonly PIHLDBContext _context;
+        private readonly UserManager<PIHLSiteUser> userManager;
 
-        public AdminController(PIHLDBContext context)
+
+
+        public AdminController(PIHLDBContext context, UserManager<PIHLSiteUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
+            
+
         }
+
+
 
         // GET: Admin
         [Authorize]
@@ -68,21 +83,37 @@ namespace PIHLSite.Controllers
             return View(aspNetUser);
         }
 
+
+
         // GET: Admin/Edit/5
         [Authorize]
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
             {
-                return NotFound();
-            }
+                var user = await userManager.FindByIdAsync(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
 
-            var aspNetUser = await _context.AspNetUsers.FindAsync(id);
-            if (aspNetUser == null)
+                var model = new EditUserViewModel
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    UserName = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Password = user.PasswordHash,
+                    ConfirmPassword = user.PasswordHash
+                };
+                return View(model);
+            }
+            else
             {
                 return NotFound();
             }
-            return View(aspNetUser);
         }
 
         // POST: Admin/Edit/5
@@ -91,34 +122,50 @@ namespace PIHLSite.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public async Task<IActionResult> Edit(string id, [Bind("Id,UserName,NormalizedUserName,Email,NormalizedEmail,EmailConfirmed,PasswordHash,SecurityStamp,ConcurrencyStamp,PhoneNumber,PhoneNumberConfirmed,TwoFactorEnabled,LockoutEnd,LockoutEnabled,AccessFailedCount,FirstName,LastName")] AspNetUser aspNetUser)
+        public async Task<IActionResult> Edit(EditUserViewModel model)
         {
-            if (id != aspNetUser.Id)
+            var user = await userManager.FindByIdAsync(model.Id);
+            if (user == null)
             {
                 return NotFound();
             }
-
-            if (ModelState.IsValid)
+            else
             {
+                //byte[] salt;
+                //new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
+
+                //var pbkdf2 = new Rfc2898DeriveBytes(model.Password, salt, 100000);
+                //byte[] hash = pbkdf2.GetBytes(20);
+
+                //byte[] hashBytes = new byte[36];
+                //Array.Copy(salt, 0, hashBytes, 0, 16);
+                //Array.Copy(hash, 0, hashBytes, 16, 20);
+
+                //string savedPasswordHash = Convert.ToBase64String(hashBytes);
+
+                var savedPasswordHash = Crypto.HashPassword(model.Password);
+
+                user.Email = model.Email;
+                user.UserName = model.UserName;
+                user.PasswordHash = savedPasswordHash;
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
                 try
                 {
-                    _context.Update(aspNetUser);
-                    await _context.SaveChangesAsync();
+                    var result = await userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return View(model);
+                    }
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
-                    if (!AspNetUserExists(aspNetUser.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
+
                 }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
+              
             }
-            return View(aspNetUser);
         }
 
         // GET: Admin/Delete/5

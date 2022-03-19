@@ -12,7 +12,7 @@
 @if (SignInManager.IsSignedIn(User))
 {
     string adminUser = User.Identity.Name.ToString();
-    if (adminUser == "christopher.thoms@colliers.com")
+    if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
     {
         
         <a class="btn btn-primary" asp-controller="Scorekeeper" asp-action="Index">View Games</a>
@@ -21,7 +21,7 @@
         <a class="btn btn-primary" asp-controller="Team" asp-action="Index">Manage Teams</a>
         <br />
         <br />
-        <a class="btn btn-primary" asp-controller="Admin" asp-action="Create">Register New Scorekeeper</a>
+        <a class="btn btn-primary" id="register" asp-area="Identity" asp-page="/Account/Register">Register New Scorekeeper</a>
         <br />
         <br />
         <a class="btn btn-primary" asp-controller="Admin" asp-action="Index">Scorekeeper Changes</a>
