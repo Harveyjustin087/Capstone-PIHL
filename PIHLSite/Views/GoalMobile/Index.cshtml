@@ -1,0 +1,68 @@
+﻿@model IEnumerable<PIHLSite.Models.GoalRecord>
+
+@{
+    ViewData["Title"] = "Index";
+}
+<div class="bg-white border border-primary rounded">
+<h1>Goals</h1>
+
+    <p>
+       
+        <a asp-action="Create">Create New Goal</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Period)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GameTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstAssistPlayer)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Game)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ScoringPlayer)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SecondAssistPlayer)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Period)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GameTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FirstAssistPlayer.FirstName) @Html.DisplayFor(modelItem => item.FirstAssistPlayer.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Game.GameId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ScoringPlayer.FirstName) @Html.DisplayFor(modelItem => item.ScoringPlayer.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SecondAssistPlayer.FirstName) @Html.DisplayFor(modelItem => item.SecondAssistPlayer.LastName)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.GoalRecordId">Edit</a> |
+                        <a asp-action="Details" asp-route-id="@item.GoalRecordId">Details</a> |
+                        <a asp-action="Delete" asp-route-id="@item.GoalRecordId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

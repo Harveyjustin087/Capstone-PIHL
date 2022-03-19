@@ -1,0 +1,54 @@
+﻿@model PIHLSite.Models.Game
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<div class="bg-white border border-primary rounded">
+    <h1>Edit</h1>
+
+    <h4>Game</h4>
+    <hr />
+    <div class="row">
+        <div class="mx-auto">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="GameId" />
+                <div class="form-group">
+                    <label asp-for="GameDate" class="control-label"></label>
+                    <input asp-for="GameDate" class="form-control" />
+                    <span asp-validation-for="GameDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="HomeScoreTotal" class="control-label"></label>
+                    <input asp-for="HomeScoreTotal" class="form-control" />
+                    <span asp-validation-for="HomeScoreTotal" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AwayScoreTotal" class="control-label"></label>
+                    <input asp-for="AwayScoreTotal" class="form-control" />
+                    <span asp-validation-for="AwayScoreTotal" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="AwayTeamId" class="control-label"></label>
+                    <input asp-for="AwayTeamId" class="form-control" />
+                    <span asp-validation-for="AwayTeamId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="HomeTeamId" class="control-label"></label>
+                    <input asp-for="HomeTeamId" class="form-control" />
+                    <span asp-validation-for="HomeTeamId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

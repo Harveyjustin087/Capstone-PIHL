@@ -1,0 +1,54 @@
+﻿@model PIHLSite.Models.Game
+
+@{
+    ViewData["Title"] = "Details";
+}
+<div class="bg-white border border-primary rounded">
+    <div class="container">
+        <h1>Scoreboard</h1>
+        <h1>Game Number: @Html.DisplayFor(modelItem => modelItem.GameId)</h1>
+        <hr />
+        <div class="row">
+            <br />
+            <div class="col-lg-2"><h4>Home Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.HomeScoreTotal)</h1></div>
+            <div class="col-lg-8" style=" text-align: center; color: white"><h1>Score Board</h1> </div>
+            <div class="col-lg-2"><h4>Away Team:<br /></h4> <h1 style="font-size:500%">@Html.DisplayFor(modelItem => modelItem.AwayScoreTotal)</h1></div>
+
+        </div>
+        <hr />
+        <br />
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.HomeTeam.Name)</h1></div>
+            <div class="col-lg-8" style=" text-align: center;"><h1>   Teams   </h1> </div>
+            <div class="col-lg-2"> <h1 style="font-size:200%">@Html.DisplayFor(modelItem => modelItem.AwayTeam.Name)</h1></div>
+
+        </div>
+        <hr />
+        <div class="row">
+            @{ if (Model.HomeTeamId == 1)
+                {
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
+else if (Model.HomeTeamId == 2)
+{
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> }
+
+    <div class="col-lg-8" style=" text-align: center;color:white"><h1>   Jerseys   </h1> </div> if (Model.AwayTeamId == 1)
+    {
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/green.jpg" alt="HomeJersey" /></div> }
+else if (Model.AwayTeamId == 2)
+{
+    <div class="col-lg-2"><img style="max-width:60%" src="~/images/orange.jpg" alt="AwayJersey" /></div> } }
+
+        </div>
+        <h1>Played On: @Html.DisplayFor(modelItem => modelItem.GameDate)</h1>
+        <div>
+            <hr />
+            <a asp-action="Edit" asp-route-id="@Model.GameId">Edit</a> |
+            <a asp-action="Index">Back to List</a> |
+            <a asp-controller="Goal" asp-route-id="@Model.GameId" asp-action="Index">Goals</a> |
+            <a asp-controller="PenaltyRecord" asp-route-id="@Model.GameId" asp-action="Index">Penalties</a>
+        </div>
+    </div>
+</div>
