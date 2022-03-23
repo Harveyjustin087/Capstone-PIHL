@@ -1,4 +1,5 @@
-﻿@model PIHLSite.Models.Game
+﻿
+@model PIHLSite.Models.Game
 
 @{
     ViewData["Title"] = "Edit";
@@ -8,47 +9,57 @@
 
     <h4>Game</h4>
     <hr />
-    <div class="row">
-        <div class="mx-auto">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="GameId" />
-                <div class="form-group">
-                    <label asp-for="GameDate" class="control-label"></label>
-                    <input asp-for="GameDate" class="form-control" />
-                    <span asp-validation-for="GameDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="HomeScoreTotal" class="control-label"></label>
-                    <input asp-for="HomeScoreTotal" class="form-control" />
-                    <span asp-validation-for="HomeScoreTotal" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="AwayScoreTotal" class="control-label"></label>
-                    <input asp-for="AwayScoreTotal" class="form-control" />
-                    <span asp-validation-for="AwayScoreTotal" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="AwayTeamId" class="control-label"></label>
-                    <input asp-for="AwayTeamId" class="form-control" />
-                    <span asp-validation-for="AwayTeamId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="HomeTeamId" class="control-label"></label>
-                    <input asp-for="HomeTeamId" class="form-control" />
-                    <span asp-validation-for="HomeTeamId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                </div>
-            </form>
+    <form asp-action="Edit">
+        <div class="row mx-1">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="GameId" />
+            <div class="form-group ml-5">
+                <label asp-for="GameDate" class="control-label"></label>
+                <input asp-for="GameDate" class="form-control" />
+                <span asp-validation-for="GameDate" class="text-danger"></span>
+            </div>
+            <div class="form-group ml-3">
+                <label asp-for="HomeScoreTotal" class="control-label"></label>
+                <input asp-for="HomeScoreTotal" class="form-control" readonly />
+                <span asp-validation-for="HomeScoreTotal" class="text-danger"></span>
+            </div>
+            <div class="form-group ml-5">
+                <label asp-for="AwayScoreTotal" class="control-label"></label>
+                <input asp-for="AwayScoreTotal" class="form-control" readonly />
+                <span asp-validation-for="AwayScoreTotal" class="text-danger"></span>
+            </div>
         </div>
-    </div>
+        <div class="row mx-1">
+            <div class="form-group ml-5">
+                <label asp-for="AwayTeamId" class="control-label"></label>
+                <input asp-for="AwayTeamId" class="form-control" readonly />
+                <span asp-validation-for="AwayTeamId" class="text-danger"></span>
+            </div>
+            <div class="form-group ml-5">
+                <label asp-for="HomeTeamId" class="control-label"></label>
+                <input asp-for="HomeTeamId" class="form-control" readonly />
+                <span asp-validation-for="HomeTeamId" class="text-danger"></span>
+            </div>
+            <div class="form-group ml-5">
+                <label asp-for="Finalized" class="control-label"></label>
+                <input asp-for="Finalized" class="form-control" readonly />
+                <span asp-validation-for="Finalized" class="text-danger"></span>
+            </div>
+            <div class="form-group ml-5">
+                <label asp-for="Overtime" class="control-label"></label>
+                <input asp-for="Overtime" class="form-control" />
+                <span asp-validation-for="Overtime" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
 
     <div>
         <a asp-action="Index">Back to List</a>
     </div>
 </div>
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

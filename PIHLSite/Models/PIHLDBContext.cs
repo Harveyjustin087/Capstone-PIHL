@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -31,6 +32,7 @@ namespace PIHLSite.Models
         public virtual DbSet<Player> Players { get; set; }
         public virtual DbSet<Season> Seasons { get; set; }
         public virtual DbSet<Team> Teams { get; set; }
+        public IEnumerable<object> Users { get; internal set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

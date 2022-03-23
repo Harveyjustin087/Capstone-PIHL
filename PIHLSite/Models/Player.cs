@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 #nullable disable
 
@@ -29,6 +30,13 @@ namespace PIHLSite.Models
         [DisplayName("PIMs")]
         public TimeSpan? Pimtotal { get; set; }
         public int TeamId { get; set; }
+        [DisplayName("Jersey Number")]
+        public int JerseyNumber { get; set; }
+        [NotMapped]
+        public string NameandNumber
+        {
+            get { return LastName + " " + JerseyNumber; }
+        }
 
         public virtual Team Team { get; set; }
         public virtual ICollection<GoalRecord> GoalRecordFirstAssistPlayers { get; set; }

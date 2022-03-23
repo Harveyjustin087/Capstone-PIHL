@@ -21,7 +21,7 @@ namespace PIHLSite.Controllers
         // GET: Player
         public async Task<IActionResult> Index()
         {
-            var pIHLDBContext = _context.Players.Include(p => p.Team);
+            var pIHLDBContext = _context.Players.Include(p => p.Team).Where(p => p.FirstName != "No Player");
             return View(await pIHLDBContext.ToListAsync());
         }
 
@@ -56,7 +56,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId")] Player player)
+        public async Task<IActionResult> Create([Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId,JerseyNumber")] Player player)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId")] Player player)
+        public async Task<IActionResult> Edit(int id, [Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId,JerseyNumber")] Player player)
         {
             if (id != player.PlayerId)
             {

@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PIHLSite.Models;
+using Microsoft.AspNetCore.Identity;
+using PIHLSite.Areas.Identity.Data;
 
 namespace PIHLSite.Controllers
 {
@@ -19,6 +22,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal
+        [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             var pIHLDBContext = _context.GoalRecords.Include(g => g.FirstAssistPlayer).Include(g => g.Game).Include(g => g.ScoringPlayer).Include(g => g.SecondAssistPlayer).Where(o => o.GameId == id);
@@ -26,6 +30,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -48,12 +53,13 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Goal/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName");
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName");
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName");
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
             return View();
         }
 
@@ -62,12 +68,41 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("GoalRecordId,GameId,ScoringPlayerId,FirstAssistPlayerId,SecondAssistPlayerId,Period,GameTime")] GoalRecord goalRecord)
         {
             var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == goalRecord.GameId);
             var scoringPlayerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.ScoringPlayerId);
             var firstAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.FirstAssistPlayerId);
             var secondAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.SecondAssistPlayerId);
+            if (secondAssistRecord.TeamId != scoringPlayerRecord.TeamId || firstAssistRecord.TeamId != scoringPlayerRecord.TeamId)
+            {
+                TempData["Message"] = "The scoring player and the assisting players must be on the same team";
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                return View();
+            }
+            if (scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId ||scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId ||
+                firstAssistRecord.PlayerId == secondAssistRecord.PlayerId)
+            {
+                TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                return View();
+            }
+            if (goalRecord.Period > 4)
+            {
+                TempData["Message"] = "Periods cannot exceed 4 as that is Overtime";
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                return View();
+            }
             //Update Game and Player tables ones goal is scored
             if (gameRecord == null)
             {
@@ -121,18 +156,19 @@ namespace PIHLSite.Controllers
                 catch (Exception ex)
                 {
 
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index","Scorekeeper");
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Scorekeeper");
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.FirstAssistPlayerId);
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.FirstAssistPlayerId);
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.SecondAssistPlayerId);
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.ScoringPlayerId);
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.SecondAssistPlayerId);
             return View(goalRecord);
         }
 
         // GET: Goal/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -145,10 +181,10 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.FirstAssistPlayerId);
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.FirstAssistPlayerId);
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.SecondAssistPlayerId);
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.ScoringPlayerId);
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.SecondAssistPlayerId);
             return View(goalRecord);
         }
 
@@ -157,6 +193,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("GoalRecordId,GameId,ScoringPlayerId,FirstAssistPlayerId,SecondAssistPlayerId,Period,GameTime")] GoalRecord goalRecord)
         {
             if (id != goalRecord.GoalRecordId)
@@ -184,14 +221,15 @@ namespace PIHLSite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.FirstAssistPlayerId);
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.FirstAssistPlayerId);
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "LastName", goalRecord.SecondAssistPlayerId);
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.ScoringPlayerId);
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.SecondAssistPlayerId);
             return View(goalRecord);
         }
 
         // GET: Goal/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -216,6 +254,7 @@ namespace PIHLSite.Controllers
         // POST: Goal/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var goalRecord = await _context.GoalRecords.FindAsync(id);
@@ -277,9 +316,9 @@ namespace PIHLSite.Controllers
             catch (Exception ex)
             {
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Scorekeeper");
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Scorekeeper");
         }
 
         private bool GoalRecordExists(int id)

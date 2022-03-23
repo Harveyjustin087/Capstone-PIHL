@@ -19,6 +19,7 @@ namespace PIHLSite.Areas.Identity
                 services.AddDbContext<PIHLContext>(options =>
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("PIHLContextConnection")));
+                
 
                 services.AddDefaultIdentity<PIHLSiteUser>(options => {
                     options.SignIn.RequireConfirmedAccount = false;
