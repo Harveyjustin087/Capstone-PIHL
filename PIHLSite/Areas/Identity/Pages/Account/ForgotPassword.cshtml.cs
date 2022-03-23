@@ -60,7 +60,7 @@ namespace PIHLSite.Areas.Identity.Pages.Account
                     return Page();
                 }
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                var callbackUrl = Url.Action("ResetPassword", "Identity/Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
                 await _sender.SendEmailAsync(model.Email, "Reset Password",
                    $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
 
