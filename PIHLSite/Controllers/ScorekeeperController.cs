@@ -48,8 +48,8 @@ namespace PIHLSite.Controllers
         // GET: Scorekeeper/Create
         public IActionResult Create()
         {
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name");
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name");
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
             return View();
         }
 
@@ -66,8 +66,8 @@ namespace PIHLSite.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name");
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name");
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
             return View(game);
         }
 
@@ -85,8 +85,8 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-            ViewData["AwayTeam.Name"] = new SelectList(_context.Teams, "TeamId", "Name", game.AwayTeamId);
-            ViewData["HomeTeam.Name"] = new SelectList(_context.Teams, "TeamId", "Name", game.HomeTeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.AwayTeamId);
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeamId);
             return View(game);
         }
 
@@ -163,8 +163,8 @@ namespace PIHLSite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name", game.AwayTeam.TeamId);
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name", game.HomeTeam.TeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams,  "TeamId", "IDandName", game.AwayTeam.TeamId);
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeam.TeamId);
             return View(game);
         }
         // GET: Scorekeeper/Edit/5

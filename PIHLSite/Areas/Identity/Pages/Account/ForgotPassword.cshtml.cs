@@ -54,17 +54,17 @@ namespace PIHLSite.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null || !await _userManager.IsEmailConfirmedAsync(user))
+                if (user == null)
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return Page();
                 }
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var paswordResetLink = Url.Action("Reset Password", "Account",
-                    new { email = model.Email, code = code }, Request.Scheme);
-                _logger.Log(LogLevel.Warning, paswordResetLink);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                await _sender.SendEmailAsync(model.Email, "Reset Password",
+                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
 
-                return Redirect("/Account/ForgotPasswordConfirm");
+                return Redirect("/Identity/Account/ForgotPasswordConfirm");
             }
 
             // If we got this far, something failed, redisplay form

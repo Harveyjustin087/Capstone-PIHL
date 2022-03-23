@@ -77,6 +77,14 @@ namespace PIHLSite.Controllers
                 ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
                 return View();
             }
+            if(playerRecord.TeamId != gameRecord.HomeTeamId || playerRecord.TeamId != gameRecord.AwayTeamId)
+            {
+                TempData["Message"] = "The player receiving the penalty must be active in this game";
+                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+                ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
+                ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                return View();
+            }
             if (playerRecord != null)
             {
                 playerRecord.Pimtotal += penaltyRecord.Pim;

@@ -1,11 +1,9 @@
 ﻿@page
 @model RegisterModel
-@{
-    ViewData["Title"] = "Register";
-    Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml";
-}
+@{ ViewData["Title"] = "Register";
+                Layout = "~/Areas/Identity/Pages/_AuthLayout.cshtml"; }
 
-
+<h3>Register A New Scorekeeper Profile</h3>
 <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
     <div class="row">
         <div class="col-md-6">

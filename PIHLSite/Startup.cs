@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PIHLSite.Areas.Identity.Data;
+using PIHLSite.Data;
 using PIHLSite.Models;
 using System;
 using System.Collections.Generic;
