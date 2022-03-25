@@ -11,7 +11,7 @@ namespace PIHLSite.Models
         {
             Teams = new HashSet<Team>();
         }
-
+        [System.ComponentModel.DisplayName("Season Number")]
         public int SeasonId { get; set; }
         public DateTime? StartYear { get; set; }
         public DateTime? EndYear { get; set; }

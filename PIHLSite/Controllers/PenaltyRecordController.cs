@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord
+        [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             var pIHLDBContext = _context.PenaltyRecords.Include(p => p.Game).Include(p => p.Penalty).Include(p => p.Player).Where(p => p.GameId == id);
@@ -26,6 +28,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,6 +50,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
@@ -60,6 +64,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("PenaltyRecordId,GameId,PlayerId,PenaltyId,Pim")] PenaltyRecord penaltyRecord)
         {
             var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
@@ -72,14 +77,6 @@ namespace PIHLSite.Controllers
             if (penaltyRecord.Pim > duration)
             {
                 TempData["Message"] = "The time of the penalty cannot be greater than a game misconduct (60 minutes)";
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
-                ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                return View();
-            }
-            if(playerRecord.TeamId != gameRecord.HomeTeamId || playerRecord.TeamId != gameRecord.AwayTeamId)
-            {
-                TempData["Message"] = "The player receiving the penalty must be active in this game";
                 ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
                 ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
                 ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
@@ -112,6 +109,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
 
@@ -136,6 +134,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("PenaltyRecordId,GameId,PlayerId,PenaltyId,Pim")] PenaltyRecord penaltyRecord)
         {
             if (id != penaltyRecord.PenaltyRecordId)
@@ -170,6 +169,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -194,6 +194,7 @@ namespace PIHLSite.Controllers
         // POST: PenaltyRecord/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var penaltyRecord = await _context.PenaltyRecords.FindAsync(id);

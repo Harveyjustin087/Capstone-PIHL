@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,13 +20,23 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Team
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var pIHLDBContext = _context.Teams.Include(t => t.Season);
-            return View(await pIHLDBContext.ToListAsync());
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                var pIHLDBContext = _context.Teams.Include(t => t.Season);
+                return View(await pIHLDBContext.ToListAsync());
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Team/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,10 +56,19 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Team/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId");
-            return View();
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId");
+                return View();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: Team/Create
@@ -56,6 +76,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("TeamId,Name,Company,Win,Loss,Otl,SeasonId")] Team team)
         {
             if (ModelState.IsValid)
@@ -69,20 +90,29 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Team/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var team = await _context.Teams.FindAsync(id);
-            if (team == null)
+                var team = await _context.Teams.FindAsync(id);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+                ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId", team.SeasonId);
+                return View(team);
+            }
+            else
             {
                 return NotFound();
             }
-            ViewData["SeasonId"] = new SelectList(_context.Seasons, "SeasonId", "SeasonId", team.SeasonId);
-            return View(team);
         }
 
         // POST: Team/Edit/5
@@ -90,6 +120,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("TeamId,Name,Company,Win,Loss,Otl,SeasonId")] Team team)
         {
             if (id != team.TeamId)
@@ -122,27 +153,37 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Team/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var team = await _context.Teams
+                    .Include(t => t.Season)
+                    .FirstOrDefaultAsync(m => m.TeamId == id);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+
+                return View(team);
+            }
+            else
             {
                 return NotFound();
             }
-
-            var team = await _context.Teams
-                .Include(t => t.Season)
-                .FirstOrDefaultAsync(m => m.TeamId == id);
-            if (team == null)
-            {
-                return NotFound();
-            }
-
-            return View(team);
         }
 
         // POST: Team/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var team = await _context.Teams.FindAsync(id);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace PIHLSite.Controllers
 
 
         // GET: Scorekeeper
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var pihlContext = _context.Games.Include(o => o.HomeTeam).Include(o => o.AwayTeam);
@@ -28,6 +30,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +49,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Create
+        [Authorize]
         public IActionResult Create()
         {
             ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
@@ -58,6 +62,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
             if (ModelState.IsValid)
@@ -72,6 +77,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Edit/5
+        [Authorize]
         public async Task<IActionResult> Finalize(int? id)
         {
             if (id == null)
@@ -95,7 +101,8 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Finalize(int id, [Bind("GameId,GameDate,HomeScoreTotal,OppScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
+        [Authorize]
+        public async Task<IActionResult> Finalize(int id, [Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
             if (id != game.GameId)
             {
@@ -168,6 +175,7 @@ namespace PIHLSite.Controllers
             return View(game);
         }
         // GET: Scorekeeper/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -188,7 +196,8 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("GameId,GameDate,HomeScoreTotal,OppScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, [Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
             if (id != game.GameId)
             {
@@ -219,6 +228,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -239,6 +249,7 @@ namespace PIHLSite.Controllers
         // POST: Scorekeeper/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var gameRecord = await _context.Games.FindAsync(id);
