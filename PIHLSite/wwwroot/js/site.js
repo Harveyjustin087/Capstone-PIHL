@@ -3,5 +3,5 @@
 
 // Write your JavaScript code.
 $(document).ready(function () {
-    $('#table_id').DataTable();
+    $('#table_layout').DataTable();
 });
