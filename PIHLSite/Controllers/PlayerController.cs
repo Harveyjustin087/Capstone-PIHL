@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using PIHLSite.Models;
 
 namespace PIHLSite.Controllers
@@ -149,6 +151,43 @@ namespace PIHLSite.Controllers
             _context.Players.Remove(player);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Team
+        public void DownloadData()
+        {
+            var collection = _context.Players;
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage Ep = new ExcelPackage();
+            ExcelWorksheet Sheet = Ep.Workbook.Worksheets.Add("PlayersReport");
+            Sheet.Cells["A1"].Value = "Player Name";
+            Sheet.Cells["B1"].Value = "Jersey Number";
+            Sheet.Cells["C1"].Value = "Score Total";
+            Sheet.Cells["D1"].Value = "Assist Total";
+            Sheet.Cells["E1"].Value = "Point Total";
+            Sheet.Cells["F1"].Value = "PIM Total";
+            int row = 2;
+            foreach (var item in collection)
+            {
+
+                Sheet.Cells[string.Format("A{0}", row)].Value = item.FirstName + " " + item.LastName;
+                Sheet.Cells[string.Format("B{0}", row)].Value = item.JerseyNumber;
+                Sheet.Cells[string.Format("C{0}", row)].Value = item.ScoreTotal;
+                Sheet.Cells[string.Format("D{0}", row)].Value = item.AssistTotal;
+                Sheet.Cells[string.Format("E{0}", row)].Value = item.PointTotal;
+                Sheet.Cells[string.Format("F{0}", row)].Value = item.Pimtotal;
+                row++;
+            }
+
+
+            Sheet.Cells["A:AZ"].AutoFitColumns();
+            Response.Clear();
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment: filename=" + "PlayersReport.xlsx");
+            Response.Body.WriteAsync(Ep.GetAsByteArray());
+            Response.CompleteAsync();
+
         }
 
         private bool PlayerExists(int id)

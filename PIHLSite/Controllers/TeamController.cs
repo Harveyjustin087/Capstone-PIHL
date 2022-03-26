@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using PIHLSite.Models;
 
 namespace PIHLSite.Controllers
@@ -149,6 +151,41 @@ namespace PIHLSite.Controllers
             _context.Teams.Remove(team);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Team
+        public void DownloadData()
+        {
+            var collection = _context.Teams.Include(t => t.Season);
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            ExcelPackage Ep = new ExcelPackage();
+            ExcelWorksheet Sheet = Ep.Workbook.Worksheets.Add("TeamsReport");
+            Sheet.Cells["A1"].Value = "Team Name";
+            Sheet.Cells["B1"].Value = "Win";
+            Sheet.Cells["C1"].Value = "Loss";
+            Sheet.Cells["D1"].Value = "OTL";
+            Sheet.Cells["E1"].Value = "Season";
+            int row = 2;
+            foreach (var item in collection)
+            {
+
+                Sheet.Cells[string.Format("A{0}", row)].Value = item.Name;
+                Sheet.Cells[string.Format("B{0}", row)].Value = item.Win;
+                Sheet.Cells[string.Format("C{0}", row)].Value = item.Loss;
+                Sheet.Cells[string.Format("D{0}", row)].Value = item.Otl;
+                Sheet.Cells[string.Format("E{0}", row)].Value = item.Season.StartYear + " - " + item.Season.EndYear;
+                row++;
+            }
+
+
+            Sheet.Cells["A:AZ"].AutoFitColumns();
+            Response.Clear();
+            Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            Response.Headers.Add("content-disposition", "attachment: filename=" + "TeamsReport.xlsx");
+            Response.Body.WriteAsync(Ep.GetAsByteArray());
+            Response.CompleteAsync();
+            
         }
 
         private bool TeamExists(int id)
