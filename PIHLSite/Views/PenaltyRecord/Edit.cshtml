@@ -3,47 +3,46 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<div class="bg-white border border-primary rounded">
+    <h1>Edit</h1>
 
-<h1>Edit</h1>
+    <h4>Penalty</h4>
+    <hr />
+    <div class="row">
+        <div class="mx-auto">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="PenaltyRecordId" />
+                <div class="form-group">
+                    <label asp-for="GameId" class="control-label" hidden></label>
+                    <input type="hidden" asp-for="GameId" value="@ViewBag.GameId" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="PlayerId" class="control-label"></label>
+                    <select asp-for="PlayerId" class="form-control" asp-items="ViewBag.PlayerId"></select>
+                    <span asp-validation-for="PlayerId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="PenaltyId" class="control-label"></label>
+                    <select asp-for="PenaltyId" class="form-control" asp-items="ViewBag.PenaltyId"></select>
+                    <span asp-validation-for="PenaltyId" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Pim" class="control-label"></label>
+                    <input asp-for="Pim" class="form-control" />
+                    <span asp-validation-for="Pim" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
 
-<h4>PenaltyRecord</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="PenaltyRecordId" />
-            <div class="form-group">
-                <label asp-for="GameId" class="control-label"></label>
-                <select asp-for="GameId" class="form-control" asp-items="ViewBag.GameId"></select>
-                <span asp-validation-for="GameId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PlayerId" class="control-label"></label>
-                <select asp-for="PlayerId" class="form-control" asp-items="ViewBag.PlayerId"></select>
-                <span asp-validation-for="PlayerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PenaltyId" class="control-label"></label>
-                <select asp-for="PenaltyId" class="form-control" asp-items="ViewBag.PenaltyId"></select>
-                <span asp-validation-for="PenaltyId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Pim" class="control-label"></label>
-                <input asp-for="Pim" class="form-control" />
-                <span asp-validation-for="Pim" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+    <div>
+        <a asp-action="Index">Back to List</a>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }

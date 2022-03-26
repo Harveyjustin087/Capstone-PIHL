@@ -83,7 +83,7 @@ namespace PIHLSite.Areas.Identity.Pages.Account
 
             using (var webclient = new WebClient())
             {
-                string validateString = "https://www.google.com/recaptcha/api/siteverify?secret=" + "6LdisQEdAAAAAF3f8d3eNhDJ0tTzRxZzz4r1bx1d" + "&response=" + gRecaptchaResponse;
+                string validateString = "https://www.google.com/recaptcha/api/siteverify?secret=" + "6LfRBgYfAAAAANqcbDLtlRL8Z9QctlXvz829yhhp" + "&response=" + gRecaptchaResponse;
                 var recaptcha_result = webclient.DownloadString(validateString);
                 if (recaptcha_result.ToLower().Contains("false"))
                 {

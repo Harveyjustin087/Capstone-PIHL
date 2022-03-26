@@ -28,6 +28,7 @@ namespace PIHLSite.Models
         public bool Finalized { get; set; }
         public bool Overtime { get; set; }
 
+
         public virtual Team AwayTeam { get; set; }
         public virtual Team HomeTeam { get; set; }
         public virtual ICollection<GoalRecord> GoalRecords { get; set; }

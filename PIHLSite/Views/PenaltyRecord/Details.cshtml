@@ -3,40 +3,41 @@
 @{
     ViewData["Title"] = "Details";
 }
+<div class="bg-white border border-primary rounded">
+    <h1>Details</h1>
 
-<h1>Details</h1>
-
-<div>
-    <h4>PenaltyRecord</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Pim)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Pim)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Game)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Game.GameId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Penalty)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Penalty.PenaltyCode)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Player)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Player.FirstName)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.PenaltyRecordId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div>
+        <h4>PenaltyRecord</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Pim)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Pim)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Game)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Game.GameId)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Penalty)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Penalty.PenaltyCode)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Player)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Player.FirstName)
+            </dd>
+        </dl>
+    </div>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.PenaltyRecordId">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>

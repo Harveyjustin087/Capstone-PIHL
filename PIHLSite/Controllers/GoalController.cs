@@ -54,7 +54,7 @@ namespace PIHLSite.Controllers
 
         // GET: Goal/Create
         [Authorize]
-        public IActionResult Create(int? id)
+        public IActionResult Create()
         {
             ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
@@ -75,32 +75,36 @@ namespace PIHLSite.Controllers
             var scoringPlayerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.ScoringPlayerId);
             var firstAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.FirstAssistPlayerId);
             var secondAssistRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == goalRecord.SecondAssistPlayerId);
-            if (secondAssistRecord.TeamId != scoringPlayerRecord.TeamId || firstAssistRecord.TeamId != scoringPlayerRecord.TeamId)
+            if (firstAssistRecord != null && secondAssistRecord != null)
             {
-                TempData["Message"] = "The scoring player and the assisting players must be on the same team";
-                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                return View();
+                if (secondAssistRecord.TeamId != scoringPlayerRecord.TeamId || firstAssistRecord.TeamId != scoringPlayerRecord.TeamId)
+                {
+                    TempData["Message"] = "The scoring player and the assisting players must be on the same team";
+                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["GameId"] = gameRecord.GameId;
+                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    return View();
+                }
+                if (scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId || scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId ||
+                    firstAssistRecord.PlayerId == secondAssistRecord.PlayerId)
+                {
+                    TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
+                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["GameId"] = gameRecord.GameId;
+                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    return View();
+                }
             }
-            if (scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId ||scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId ||
-                firstAssistRecord.PlayerId == secondAssistRecord.PlayerId)
-            {
-                TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
-                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                return View();
-            }
+
             if (goalRecord.Period > 4)
             {
                 TempData["Message"] = "Periods cannot exceed 4 as that is Overtime";
-                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["GameId"] = gameRecord.GameId;
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                 return View();
             }
             //Update Game and Player tables ones goal is scored
@@ -121,15 +125,23 @@ namespace PIHLSite.Controllers
                 scoringPlayerRecord.PointTotal++;
                 scoringPlayerRecord.ScoreTotal++;
             }
-            if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+            //check if first assist record is not null
+            if (firstAssistRecord != null)
             {
-                firstAssistRecord.PointTotal++;
-                firstAssistRecord.AssistTotal++;
+                if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+                {
+                    firstAssistRecord.PointTotal++;
+                    firstAssistRecord.AssistTotal++;
+                }
             }
-            if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+            //check if second assist record is not null
+            if (secondAssistRecord != null)
             {
-                secondAssistRecord.PointTotal++;
-                secondAssistRecord.AssistTotal++;
+                if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+                {
+                    secondAssistRecord.PointTotal++;
+                    secondAssistRecord.AssistTotal++;
+                }
             }
             if (ModelState.IsValid)
             {
@@ -155,15 +167,16 @@ namespace PIHLSite.Controllers
                 }
                 catch (Exception ex)
                 {
-
+                    TempData["Message"] = "Goal Information Created";
                     return RedirectToAction("Index","Scorekeeper");
                 }
+                TempData["Message"] = "Goal Information Not Created";
                 return RedirectToAction("Index", "Scorekeeper");
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.FirstAssistPlayerId);
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.SecondAssistPlayerId);
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+            ViewData["GameId"] = gameRecord.GameId;
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
             return View(goalRecord);
         }
 
@@ -177,15 +190,24 @@ namespace PIHLSite.Controllers
             }
 
             var goalRecord = await _context.GoalRecords.FindAsync(id);
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == goalRecord.GameId);
             if (goalRecord == null)
             {
                 return NotFound();
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.FirstAssistPlayerId);
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.SecondAssistPlayerId);
-            return View(goalRecord);
+            if (gameRecord.Finalized != true)
+            {
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["GameId"] = gameRecord.GameId;
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                return View(goalRecord);
+            }
+            else
+            {
+                TempData["Message"] = "Finalized games cannot have Additional goals";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
         }
 
         // POST: Goal/Edit/5
@@ -200,7 +222,7 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-
+            
             if (ModelState.IsValid)
             {
                 try
@@ -219,13 +241,11 @@ namespace PIHLSite.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                TempData["Message"] = "Goal Updated";
+                return RedirectToAction("Index", "Scorekeeper");
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.FirstAssistPlayerId);
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "JerseyNumber", goalRecord.SecondAssistPlayerId);
-            return View(goalRecord);
+            TempData["Message"] = "Goal Not Updated";
+            return RedirectToAction("Index", "Scorekeeper");
         }
 
         // GET: Goal/Delete/5
@@ -281,18 +301,25 @@ namespace PIHLSite.Controllers
                 scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
                 scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
             }
-            if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+            if (firstAssistRecord != null)
             {
-                
-                firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+                {
+
+                    firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                    firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                }
             }
-            if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+            if (secondAssistRecord != null)
             {
-                
-                secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+                {
+
+                    secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                    secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                }
             }
+
             try
             {
                 //Delete Goal
@@ -315,9 +342,10 @@ namespace PIHLSite.Controllers
             }
             catch (Exception ex)
             {
-
+                TempData["Message"] = "Goal Information Deleted";
                 return RedirectToAction("Index", "Scorekeeper");
             }
+            TempData["Message"] = "Goal Information Not Deleted";
             return RedirectToAction("Index", "Scorekeeper");
         }
 

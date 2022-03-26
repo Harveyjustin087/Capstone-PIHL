@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord
+        [Authorize]
         public async Task<IActionResult> Index(int id)
         {
             var pIHLDBContext = _context.PenaltyRecords.Include(p => p.Game).Include(p => p.Penalty).Include(p => p.Player).Where(p => p.GameId == id);
@@ -26,6 +28,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,11 +50,13 @@ namespace PIHLSite.Controllers
         }
 
         // GET: PenaltyRecord/Create
-        public IActionResult Create()
+        [Authorize]
+        public IActionResult Create(int id)
         {
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+            var gameRecord = _context.Set<Game>().FirstOrDefault(o => o.GameId == id);
+            ViewData["GameId"] = gameRecord.GameId;
             ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
-            ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+            ViewData["PlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
             return View();
         }
 
@@ -60,6 +65,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("PenaltyRecordId,GameId,PlayerId,PenaltyId,Pim")] PenaltyRecord penaltyRecord)
         {
             var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
@@ -68,13 +74,12 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-            TimeSpan duration = new TimeSpan(0,60,0);
+            TimeSpan duration = new TimeSpan(60,00,0);
             if (penaltyRecord.Pim > duration)
             {
-                TempData["Message"] = "The time of the penalty cannot be greater than a game misconduct (60 minutes)";
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
+                ViewData["GameId"] = gameRecord.GameId;
                 ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
-                ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["PlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                 return View();
             }
             if (playerRecord != null)
@@ -93,33 +98,37 @@ namespace PIHLSite.Controllers
                 }
                 catch (Exception ex)
                 {
+                    TempData["Message"] = "Penalty Information Created";
                     return Redirect(Url.Action("Index", "Scorekeeper"));
                 }
+                TempData["Message"] = "Penalty Information Not Created";
                 return Redirect(Url.Action("Index", "Scorekeeper"));
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", penaltyRecord.GameId);
-            ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription", penaltyRecord.PenaltyId);
-            ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", penaltyRecord.PlayerId);
+            ViewData["GameId"] = gameRecord.GameId;
+            ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
+            ViewData["PlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
             return View(penaltyRecord);
         }
 
         // GET: PenaltyRecord/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-
+            
             if (id == null)
             {
                 return NotFound();
             }
 
             var penaltyRecord = await _context.PenaltyRecords.FindAsync(id);
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
             if (penaltyRecord == null)
             {
                 return NotFound();
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", penaltyRecord.GameId);
-            ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription", penaltyRecord.PenaltyId);
-            ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", penaltyRecord.PlayerId);
+            ViewData["GameId"] = gameRecord.GameId;
+            ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
+            ViewData["PlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
             return View(penaltyRecord);
         }
 
@@ -128,11 +137,30 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("PenaltyRecordId,GameId,PlayerId,PenaltyId,Pim")] PenaltyRecord penaltyRecord)
         {
             if (id != penaltyRecord.PenaltyRecordId)
             {
                 return NotFound();
+            }
+            var gameRecord = await _context.Set<Game>().FirstOrDefaultAsync(o => o.GameId == penaltyRecord.GameId);
+            var playerRecord = await _context.Set<Player>().FirstOrDefaultAsync(o => o.PlayerId == penaltyRecord.PlayerId);
+            if (gameRecord == null)
+            {
+                return NotFound();
+            }
+            TimeSpan duration = new TimeSpan(60, 00, 0);
+            if (penaltyRecord.Pim > duration)
+            {
+                ViewData["GameId"] = gameRecord.GameId;
+                ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyDescription");
+                ViewData["PlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                return View();
+            }
+            if (playerRecord != null)
+            {
+                playerRecord.Pimtotal += penaltyRecord.Pim;
             }
 
             if (ModelState.IsValid)
@@ -141,6 +169,10 @@ namespace PIHLSite.Controllers
                 {
                     _context.Update(penaltyRecord);
                     await _context.SaveChangesAsync();
+
+                    _context.Update(playerRecord);
+                    await _context.SaveChangesAsync();
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -153,15 +185,15 @@ namespace PIHLSite.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                TempData["Message"] = "Penalty Information Updated";
+                return RedirectToAction("Index", "Scorekeeper");
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", penaltyRecord.GameId);
-            ViewData["PenaltyId"] = new SelectList(_context.Penalties, "PenaltyId", "PenaltyCode", penaltyRecord.PenaltyId);
-            ViewData["PlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", penaltyRecord.PlayerId);
-            return View(penaltyRecord);
+            TempData["Message"] = "Penalty Information Not Updated";
+            return RedirectToAction("Index", "Scorekeeper");
         }
 
         // GET: PenaltyRecord/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -186,6 +218,7 @@ namespace PIHLSite.Controllers
         // POST: PenaltyRecord/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var penaltyRecord = await _context.PenaltyRecords.FindAsync(id);
@@ -209,8 +242,10 @@ namespace PIHLSite.Controllers
             }
             catch (Exception)
             {
+                TempData["Message"] = "Penalty Information Deleted";
                 return Redirect(Url.Action("Index", "Scorekeeper"));
             }
+            TempData["Message"] = "Penalty Information Deleted";
             return Redirect(Url.Action("Index", "Scorekeeper"));
         }
 

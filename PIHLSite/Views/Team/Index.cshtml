@@ -10,7 +10,7 @@
     <p>
         <a asp-action="Create">Create New</a>
     </p>
-    <table class="table">
+    <table id="table_layout" class="display">
         <thead>
             <tr>
                 <th>
@@ -27,9 +27,6 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Otl)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Season)
                 </th>
                 <th></th>
             </tr>
@@ -52,9 +49,6 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Otl)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Season.SeasonId)
                     </td>
                     <td>
                         <a asp-action="Edit" asp-route-id="@item.TeamId">Edit</a> |

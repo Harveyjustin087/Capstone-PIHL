@@ -6,7 +6,6 @@
 <div class="bg-white border border-primary rounded">
     <h1>Add A Goal</h1>
 
-    <h4>GoalRecord</h4>
     <hr />
     <div class="row">
         <div class="mx-auto">
@@ -14,8 +13,8 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div><p class="text-danger">@TempData["Message"]</p></div>
                 <div class="form-group">
-                    <label asp-for="GameId" class="control-label"></label>
-                    <select asp-for="GameId" class="form-control" asp-items="ViewBag.GameId"></select>
+                    <label asp-for="GameId" class="control-label" hidden></label>
+                    <input type="hidden" asp-for="GameId" value="@ViewBag.GameId" />
                 </div>
                 <div class="form-group">
                     <label asp-for="ScoringPlayerId" class="control-label"></label>
@@ -23,11 +22,15 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="FirstAssistPlayerId" class="control-label"></label>
-                    <select asp-for="FirstAssistPlayerId" class="form-control" asp-items="ViewBag.FirstAssistPlayerId"></select>
+                    <select asp-for="FirstAssistPlayerId" class="form-control" asp-items="ViewBag.FirstAssistPlayerId">
+                        <option selected value="">No Player</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label asp-for="SecondAssistPlayerId" class="control-label"></label>
-                    <select asp-for="SecondAssistPlayerId" class="form-control" asp-items="ViewBag.SecondAssistPlayerId"></select>
+                    <select asp-for="SecondAssistPlayerId" class="form-control" asp-items="ViewBag.SecondAssistPlayerId">
+                        <option selected value="">No Player</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label asp-for="Period" class="control-label"></label>
@@ -36,7 +39,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="GameTime" class="control-label"></label>
-                    <input asp-for="GameTime" class="form-control" />
+                        <input asp-for="GameTime" class="form-control" pattern="^[0-5]?\d:[0-5]\d$" placeholder="MM:SS"/>
                     <span asp-validation-for="GameTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -47,7 +50,7 @@
     </div>
 
     <div>
-        <a asp-action="Index">Back to List</a>
+        <a asp-action="Index" asp-controller="Scorekeeper">Back to List</a>
     </div>
 </div>
     @section Scripts {

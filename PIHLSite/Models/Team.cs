@@ -21,6 +21,7 @@ namespace PIHLSite.Models
         public int Loss { get; set; }
         public int Otl { get; set; }
         public int SeasonId { get; set; }
+        public string IDandName { get { return TeamId + " " + Name; } }
 
         public virtual Season Season { get; set; }
         public virtual ICollection<Game> GameAwayTeams { get; set; }

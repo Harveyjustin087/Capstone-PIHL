@@ -4,31 +4,32 @@
 <div class="bg-white border border-primary rounded">
     <h1>Games</h1>
     <p>
-        <a asp-action="Create" class="text-danger">Create New Game</a>
+        <a asp-action="Create" class="text-primary">Create New Game</a>
+        <div><p class="text-danger">@TempData["Message"]</p></div>
     </p>
-    <table class="table">
+    <table id="table_layout" class="display">
         <thead>
             <tr>
                 <th>
-                    <h6>Date Played</h6>
+                    Date Played
                 </th>
                 <th>
-                    <h6>Home Goals</h6>
+                    Home Goals
                 </th>
                 <th>
-                    <h6>Away Goals</h6>
+                    Away Goals
                 </th>
                 <th>
-                    <h6>Home Team</h6>
+                    Home Team
                 </th>
                 <th>
-                    <h6>Away Team</h6>
+                    Away Team
                 </th>
                 <th>
-                    <h6>Final Score</h6>
+                    Game Finalized
                 </th>
                 <th>
-                    <h6>Overtime</h6>
+                    Overtime
                 </th>
                 <th></th>
             </tr>
@@ -67,3 +68,4 @@
 }
         </tbody>
     </table>
+</div>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,7 @@ namespace PIHLSite.Controllers
 
 
         // GET: Scorekeeper
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var pihlContext = _context.Games.Include(o => o.HomeTeam).Include(o => o.AwayTeam);
@@ -28,6 +30,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,10 +49,11 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name");
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name");
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
             return View();
         }
 
@@ -58,20 +62,37 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
+            if ((game.AwayTeamId >= 6) || (game.AwayTeamId <= 0)) 
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if((game.HomeTeamId >= 6) || (game.HomeTeamId<= 0))
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if (game.AwayTeamId == game.HomeTeamId)
+            {
+                TempData["Message"] = "The Home and Away Team cannot be the same";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(game);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name");
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name");
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName");
             return View(game);
         }
 
         // GET: Scorekeeper/Edit/5
+        [Authorize]
         public async Task<IActionResult> Finalize(int? id)
         {
             if (id == null)
@@ -85,8 +106,8 @@ namespace PIHLSite.Controllers
             {
                 return NotFound();
             }
-            ViewData["AwayTeam.Name"] = new SelectList(_context.Teams, "TeamId", "Name", game.AwayTeamId);
-            ViewData["HomeTeam.Name"] = new SelectList(_context.Teams, "TeamId", "Name", game.HomeTeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.AwayTeamId);
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeamId);
             return View(game);
         }
 
@@ -95,7 +116,8 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Finalize(int id, [Bind("GameId,GameDate,HomeScoreTotal,OppScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
+        [Authorize]
+        public async Task<IActionResult> Finalize(int id, [Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
             if (id != game.GameId)
             {
@@ -163,11 +185,12 @@ namespace PIHLSite.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "AwayTeamId", "Name", game.AwayTeam.TeamId);
-            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "HomeTeamId", "Name", game.HomeTeam.TeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams,  "TeamId", "IDandName", game.AwayTeam.TeamId);
+            ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeam.TeamId);
             return View(game);
         }
         // GET: Scorekeeper/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -188,7 +211,8 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("GameId,GameDate,HomeScoreTotal,OppScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
+        [Authorize]
+        public async Task<IActionResult> Edit(int id, [Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
             if (id != game.GameId)
             {
@@ -219,6 +243,7 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Scorekeeper/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -239,6 +264,7 @@ namespace PIHLSite.Controllers
         // POST: Scorekeeper/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var gameRecord = await _context.Games.FindAsync(id);
@@ -270,17 +296,23 @@ namespace PIHLSite.Controllers
                         scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
                         scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
                     }
-                    if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                    if (firstAssistRecord != null)
                     {
+                        if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                        {
 
-                        firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                        firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                            firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                            firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                        }
                     }
-                    if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                    if (secondAssistRecord != null)
                     {
+                        if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                        {
 
-                        secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                        secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                            secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                            secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                        }
                     }
                     try
                     {

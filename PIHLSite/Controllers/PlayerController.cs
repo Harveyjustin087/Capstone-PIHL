@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,13 +21,23 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Player
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            var pIHLDBContext = _context.Players.Include(p => p.Team).Where(p => p.FirstName != "No Player");
-            return View(await pIHLDBContext.ToListAsync());
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                var pIHLDBContext = _context.Players.Include(p => p.Team).Where(p => p.FirstName != "No Player");
+                return View(await pIHLDBContext.ToListAsync());
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Player/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -47,10 +57,19 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Player/Create
+        [Authorize]
         public IActionResult Create()
         {
-            ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name");
-            return View();
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name");
+                return View();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: Player/Create
@@ -58,6 +77,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId,JerseyNumber")] Player player)
         {
             if (ModelState.IsValid)
@@ -71,20 +91,29 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Player/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var player = await _context.Players.FindAsync(id);
-            if (player == null)
+                var player = await _context.Players.FindAsync(id);
+                if (player == null)
+                {
+                    return NotFound();
+                }
+                ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name", player.TeamId);
+                return View(player);
+            }
+            else
             {
                 return NotFound();
             }
-            ViewData["TeamId"] = new SelectList(_context.Teams, "TeamId", "Name", player.TeamId);
-            return View(player);
         }
 
         // POST: Player/Edit/5
@@ -92,6 +121,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("PlayerId,FirstName,LastName,Age,ScoreTotal,AssistTotal,PointTotal,Pimtotal,TeamId,JerseyNumber")] Player player)
         {
             if (id != player.PlayerId)
@@ -124,27 +154,37 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Player/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var player = await _context.Players
+                    .Include(p => p.Team)
+                    .FirstOrDefaultAsync(m => m.PlayerId == id);
+                if (player == null)
+                {
+                    return NotFound();
+                }
+
+                return View(player);
+            }
+            else
             {
                 return NotFound();
             }
-
-            var player = await _context.Players
-                .Include(p => p.Team)
-                .FirstOrDefaultAsync(m => m.PlayerId == id);
-            if (player == null)
-            {
-                return NotFound();
-            }
-
-            return View(player);
         }
 
         // POST: Player/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var player = await _context.Players.FindAsync(id);
