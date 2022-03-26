@@ -4,7 +4,8 @@
 <div class="bg-white border border-primary rounded">
     <h1>Games</h1>
     <p>
-        <a asp-action="Create" class="text-danger">Create New Game</a>
+        <a asp-action="Create" class="text-primary">Create New Game</a>
+        <div><p class="text-danger">@TempData["Message"]</p></div>
     </p>
     <table id="table_layout" class="display">
         <thead>
@@ -25,10 +26,10 @@
                     Away Team
                 </th>
                 <th>
-                    Game Finalized?
+                    Game Finalized
                 </th>
                 <th>
-                    Overtime?
+                    Overtime
                 </th>
                 <th></th>
             </tr>
