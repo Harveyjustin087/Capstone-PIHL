@@ -14,7 +14,7 @@
                 <div><p class="text-danger">@TempData["Message"]</p></div>
                 <div class="form-group">
                     <label asp-for="GameId" class="control-label" hidden></label>
-                    <input asp-for="GameId" class="form-control" value="ViewBag.GameId" hidden />
+                    <input type="hidden" asp-for="GameId" value="@ViewBag.GameId" />
                 </div>
                 <div class="form-group">
                     <label asp-for="ScoringPlayerId" class="control-label"></label>
@@ -23,13 +23,13 @@
                 <div class="form-group">
                     <label asp-for="FirstAssistPlayerId" class="control-label"></label>
                     <select asp-for="FirstAssistPlayerId" class="form-control" asp-items="ViewBag.FirstAssistPlayerId">
-                        <option selected>No Player</option>
+                        <option selected value="">No Player</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label asp-for="SecondAssistPlayerId" class="control-label"></label>
                     <select asp-for="SecondAssistPlayerId" class="form-control" asp-items="ViewBag.SecondAssistPlayerId">
-                        <option selected>No Player</option>
+                        <option selected value="">No Player</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -39,7 +39,7 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="GameTime" class="control-label"></label>
-                    <input asp-for="GameTime" class="form-control" />
+                        <input asp-for="GameTime" class="form-control" pattern="^[0-5]?\d:[0-5]\d$" placeholder="MM:SS"/>
                     <span asp-validation-for="GameTime" class="text-danger"></span>
                 </div>
                 <div class="form-group">

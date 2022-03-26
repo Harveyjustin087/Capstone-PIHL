@@ -81,20 +81,20 @@ namespace PIHLSite.Controllers
                 if (secondAssistRecord.TeamId != scoringPlayerRecord.TeamId || firstAssistRecord.TeamId != scoringPlayerRecord.TeamId)
                 {
                     TempData["Message"] = "The scoring player and the assisting players must be on the same team";
-                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                    ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["GameId"] = gameRecord.GameId;
+                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                     return View();
                 }
                 if (scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId || scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId ||
                     firstAssistRecord.PlayerId == secondAssistRecord.PlayerId)
                 {
                     TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
-                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                    ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                    ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["GameId"] = gameRecord.GameId;
+                    ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                    ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                     return View();
                 }
             }
@@ -102,10 +102,10 @@ namespace PIHLSite.Controllers
             if (goalRecord.Period > 4)
             {
                 TempData["Message"] = "Periods cannot exceed 4 as that is Overtime";
-                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-                ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["GameId"] = gameRecord.GameId;
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                 return View();
             }
             //Update Game and Player tables ones goal is scored
@@ -176,10 +176,10 @@ namespace PIHLSite.Controllers
                 }
                 return RedirectToAction("Index", "Scorekeeper");
             }
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.FirstAssistPlayerId);
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId", goalRecord.GameId);
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.ScoringPlayerId);
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber", goalRecord.SecondAssistPlayerId);
+            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+            ViewData["GameId"] = gameRecord.GameId;
+            ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
             return View(goalRecord);
         }
 
@@ -297,18 +297,25 @@ namespace PIHLSite.Controllers
                 scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
                 scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
             }
-            if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+            if (firstAssistRecord != null)
             {
-                
-                firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                if (firstAssistRecord.PlayerId == goalRecord.FirstAssistPlayerId)
+                {
+
+                    firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                    firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                }
             }
-            if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+            if (secondAssistRecord != null)
             {
-                
-                secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                if (secondAssistRecord.PlayerId == goalRecord.SecondAssistPlayerId)
+                {
+
+                    secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                    secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                }
             }
+
             try
             {
                 //Delete Goal
