@@ -65,6 +65,21 @@ namespace PIHLSite.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
+            if ((game.AwayTeamId >= 6) || (game.AwayTeamId <= 0)) 
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if((game.HomeTeamId >= 6) || (game.HomeTeamId<= 0))
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if (game.AwayTeamId == game.HomeTeamId)
+            {
+                TempData["Message"] = "The Home and Away Team cannot be the same";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(game);
@@ -281,17 +296,23 @@ namespace PIHLSite.Controllers
                         scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
                         scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
                     }
-                    if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                    if (firstAssistRecord != null)
                     {
+                        if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                        {
 
-                        firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                        firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                            firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                            firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                        }
                     }
-                    if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                    if (secondAssistRecord != null)
                     {
+                        if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                        {
 
-                        secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                        secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                            secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                            secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                        }
                     }
                     try
                     {

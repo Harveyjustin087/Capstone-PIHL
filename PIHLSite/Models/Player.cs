@@ -35,7 +35,7 @@ namespace PIHLSite.Models
         [NotMapped]
         public string NameandNumber
         {
-            get { return LastName + " " + JerseyNumber; }
+            get { return Team.Name + " - " + JerseyNumber; }
         }
 
         public virtual Team Team { get; set; }
