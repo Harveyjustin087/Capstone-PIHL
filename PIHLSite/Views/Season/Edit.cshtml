@@ -1,43 +1,39 @@
-﻿@model IEnumerable<PIHLSite.Models.Season>
+﻿@model PIHLSite.Models.Season;
 
-@{
-    ViewData["Title"] = "Index";
-}
+@{ ViewData["Title"] = "Edit"; }
 <div class="bg-white border border-primary rounded">
-    <h1>Seasons</h1>
+    <h1>Edit</h1>
 
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.StartYear)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EndYear)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StartYear)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndYear)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.SeasonId">Edit</a> |
-                        <a asp-action="Details" asp-route-id="@item.SeasonId">Details</a> |
-                        <a asp-action="Delete" asp-route-id="@item.SeasonId">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <h4>PenaltyRecord</h4>
+    <hr />
+    <div class="row">
+        <div class="row mx-md-auto">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="SeasonId" />
+                <div class="form-group">
+                    <label asp-for="StartYear" class="control-label"></label>
+                    <input asp-for="StartYear" class="form-control" />
+                    <span asp-validation-for="StartYear" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndYear" class="control-label"></label>
+                    <input asp-for="EndYear" class="form-control" />
+                    <span asp-validation-for="EndYear" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

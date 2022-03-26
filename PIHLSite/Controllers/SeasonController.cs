@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +20,22 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Season
+        [Authorize]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Seasons.ToListAsync());
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                return View(await _context.Seasons.ToListAsync());
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // GET: Season/Details/5
+        [Authorize]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,7 +56,15 @@ namespace PIHLSite.Controllers
         // GET: Season/Create
         public IActionResult Create()
         {
-            return View();
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                return View();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
         // POST: Season/Create
@@ -53,6 +72,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Create([Bind("SeasonId,StartYear,EndYear")] Season season)
         {
             if (ModelState.IsValid)
@@ -65,19 +85,28 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Season/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var season = await _context.Seasons.FindAsync(id);
-            if (season == null)
+                var season = await _context.Seasons.FindAsync(id);
+                if (season == null)
+                {
+                    return NotFound();
+                }
+                return View(season);
+            }
+            else
             {
                 return NotFound();
             }
-            return View(season);
         }
 
         // POST: Season/Edit/5
@@ -85,6 +114,7 @@ namespace PIHLSite.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> Edit(int id, [Bind("SeasonId,StartYear,EndYear")] Season season)
         {
             if (id != season.SeasonId)
@@ -116,26 +146,36 @@ namespace PIHLSite.Controllers
         }
 
         // GET: Season/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            string adminUser = User.Identity.Name.ToString();
+            if (adminUser == "christopher.thoms@colliers.com" || adminUser == "Christopher.Thoms@colliers.com")
+            {
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var season = await _context.Seasons
+                    .FirstOrDefaultAsync(m => m.SeasonId == id);
+                if (season == null)
+                {
+                    return NotFound();
+                }
+
+                return View(season);
+            }
+            else
             {
                 return NotFound();
             }
-
-            var season = await _context.Seasons
-                .FirstOrDefaultAsync(m => m.SeasonId == id);
-            if (season == null)
-            {
-                return NotFound();
-            }
-
-            return View(season);
         }
 
         // POST: Season/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var season = await _context.Seasons.FindAsync(id);

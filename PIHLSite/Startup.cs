@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using PIHLSite.Areas.Identity.Data;
 using PIHLSite.Data;
 using PIHLSite.Models;
+using PIHLSite.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,8 @@ namespace PIHLSite
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddDbContext<PIHLDBContext>(Options => Options.UseSqlServer(Configuration.GetConnectionString("PIHLContextConnection")));
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
+            services.AddTransient<IMailService, MailService>();
 
         }
 
