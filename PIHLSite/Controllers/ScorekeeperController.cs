@@ -65,6 +65,21 @@ namespace PIHLSite.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
+            if ((game.AwayTeamId >= 6) || (game.AwayTeamId <= 0)) 
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if((game.HomeTeamId >= 6) || (game.HomeTeamId<= 0))
+            {
+                TempData["Message"] = "There are only 6 Teams in the League";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
+            if (game.AwayTeamId == game.HomeTeamId)
+            {
+                TempData["Message"] = "The Home and Away Team cannot be the same";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
             if (ModelState.IsValid)
             {
                 _context.Add(game);
@@ -118,59 +133,68 @@ namespace PIHLSite.Controllers
                 {
                     return NotFound();
                 }
-                gameRecord.Finalized = true;
-                if (awayTeamRecord.TeamId == gameRecord.AwayTeamId)
+                if (gameRecord.Finalized == false)
                 {
-                    if (gameRecord.Overtime == false)
+                    gameRecord.Finalized = true;
+                    if (awayTeamRecord.TeamId == gameRecord.AwayTeamId)
                     {
-                        if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                        if (game.Overtime == false)
                         {
-                            awayTeamRecord.Win++;
-                            homeTeamRecord.Loss++;
-                        }
-                        else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
-                        {
-                            awayTeamRecord.Loss++;
-                            homeTeamRecord.Win++;
+                            if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Win++;
+                                homeTeamRecord.Loss++;
+                            }
+                            else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Loss++;
+                                homeTeamRecord.Win++;
+                            }
+                            else
+                            {
+                                return RedirectToAction(nameof(Index));
+                            }
                         }
                         else
                         {
-                            return RedirectToAction(nameof(Index));
+                            gameRecord.Overtime = true;
+                            if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Win++;
+                                homeTeamRecord.Otl++;
+                            }
+                            else
+                            {
+                                awayTeamRecord.Otl++;
+                                homeTeamRecord.Win++;
+                            }
                         }
                     }
-                    else
+                    try
                     {
-                        if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
-                        {
-                            awayTeamRecord.Win++;
-                            homeTeamRecord.Otl++;
-                        }
-                        else
-                        {
-                            awayTeamRecord.Otl++;
-                            homeTeamRecord.Win++;
-                        }
+                        _context.Update(gameRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(homeTeamRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(awayTeamRecord);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["Message"] = "Game Finalized";
+                        return RedirectToAction("Index", "Scorekeeper");
                     }
                 }
-                try
+                else
                 {
-                    _context.Update(gameRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Update(homeTeamRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Update(awayTeamRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-
-                    return RedirectToAction(nameof(Index));
+                    TempData["Message"] = "This Game is already A Final Score";
+                    return RedirectToAction("Index", "Scorekeeper");
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams,  "TeamId", "IDandName", game.AwayTeam.TeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.AwayTeam.TeamId);
             ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeam.TeamId);
             return View(game);
         }
@@ -281,17 +305,23 @@ namespace PIHLSite.Controllers
                         scoringPlayerRecord.ScoreTotal = scoringPlayerRecord.ScoreTotal - 1;
                         scoringPlayerRecord.PointTotal = scoringPlayerRecord.PointTotal - 1;
                     }
-                    if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                    if (firstAssistRecord != null)
                     {
+                        if (firstAssistRecord.PlayerId == goal.FirstAssistPlayerId)
+                        {
 
-                        firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
-                        firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                            firstAssistRecord.AssistTotal = firstAssistRecord.AssistTotal - 1;
+                            firstAssistRecord.PointTotal = firstAssistRecord.PointTotal - 1;
+                        }
                     }
-                    if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                    if (secondAssistRecord != null)
                     {
+                        if (secondAssistRecord.PlayerId == goal.SecondAssistPlayerId)
+                        {
 
-                        secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
-                        secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                            secondAssistRecord.AssistTotal = secondAssistRecord.AssistTotal - 1;
+                            secondAssistRecord.PointTotal = secondAssistRecord.PointTotal - 1;
+                        }
                     }
                     try
                     {
