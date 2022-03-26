@@ -54,7 +54,7 @@ namespace PIHLSite.Controllers
 
         // GET: Goal/Create
         [Authorize]
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
             ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
             ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
