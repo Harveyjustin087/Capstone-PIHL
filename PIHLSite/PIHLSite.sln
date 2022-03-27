@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PIHLSite", "PIHLSite.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceTests", "..\ServiceTests\ServiceTests.csproj", "{828E78AA-B069-480E-8372-4CBDC185C3AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumTests", "..\SeleniumTests\SeleniumTests.csproj", "{EDA8D522-088D-4C47-9939-927CA5F9F785}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{828E78AA-B069-480E-8372-4CBDC185C3AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{828E78AA-B069-480E-8372-4CBDC185C3AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{828E78AA-B069-480E-8372-4CBDC185C3AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA8D522-088D-4C47-9939-927CA5F9F785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA8D522-088D-4C47-9939-927CA5F9F785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA8D522-088D-4C47-9939-927CA5F9F785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA8D522-088D-4C47-9939-927CA5F9F785}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

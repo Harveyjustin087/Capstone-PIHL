@@ -1,10 +1,9 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
 using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium.Support;
 using System;
-using System.Collections.Generic;
 
 namespace SeleniumTests
 {
@@ -15,40 +14,59 @@ namespace SeleniumTests
         // please follow the instructions from http://go.microsoft.com/fwlink/?LinkId=619687
         // to install Microsoft WebDriver.
 
-        IWebDriver driver;
+        private EdgeDriver _driver;
         WebDriverWait wait;
-        private Dictionary<string, string> testUserFixture = new Dictionary<string, string>();
 
-        [OneTimeSetUp]
-        public void SetUpTheFixture()
+        [TestInitialize]
+        public void EdgeDriverInitialize()
         {
-            testUserFixture.Add("UserName", "testUser");
-            testUserFixture.Add("FirstName", "John");
-            testUserFixture.Add("LastName", "Doe");
-            testUserFixture.Add("Email", "j_doe@test.com");
-            testUserFixture.Add("Password", "aA1234*");
-            testUserFixture.Add("ConfirmPassword", "aA1234*");
+            // Initialize edge driver 
+            var options = new EdgeOptions
+            {
+                PageLoadStrategy = PageLoadStrategy.Normal
+            };
+            _driver = new EdgeDriver(options);
+            wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
         }
 
-        [SetUp]
-        public void Setup()
+        [TestMethod]
+        public void TestAuthorizePagesRedirectToLogin()
         {
-            driver = new EdgeDriver();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
-            driver.Navigate().GoToUrl("http://localhost:5000");
+            //Setup
+            _driver.Url = "http://localhost:5000/Scorekeeper";
+            //Act
+            string className = _driver.FindElement(By.XPath("/html/body/div[1]/div/main/div/div/div")).GetAttribute("class");
+            //Assert
+            Assert.AreEqual("card login-logout-tab", className);
         }
 
-        [Test, Order(1)]
-        public void TestDoesNotShowPagesContentToUnauthorizedUsers()
+        [TestMethod]
+        public void TestLogin()
         {
-            driver.FindElement(By.LinkText("Profile")).Click();
-            wait.Until(webDriver => webDriver.FindElement(By.Id("Unauthorized_View")).Displayed);
+            _driver.Url = "http://localhost:5000/";
+            _driver.FindElement(By.LinkText("Scorekeeper Login")).Click();
+            _driver.FindElement(By.Id("email")).SendKeys("christopher.thoms@colliers.com");
+            _driver.FindElement(By.Id("password")).SendKeys("Batman316");
+            _driver.FindElement(By.XPath("//*[@id='account']/div[5]/button")).Click();
+            wait.Until(webDriver => webDriver.FindElement(By.LinkText("Hello christopher.thoms@colliers.com! |")).Displayed);
+        }
+
+        [TestMethod]
+        public void TestScorekeeperCantSeeAdminOptions()
+        {
+            _driver.Url = "http://localhost:5000/";
+            _driver.FindElement(By.LinkText("Scorekeeper Login")).Click();
+            _driver.FindElement(By.Id("email")).SendKeys("test@email.com");
+            _driver.FindElement(By.Id("password")).SendKeys("Batman316");
+            _driver.FindElement(By.XPath("//*[@id='account']/div[5]/button")).Click();
+            wait.Until(webDriver => webDriver.FindElement(By.LinkText("Hello test@email.com! |")).Displayed);
+            Assert.AreEqual(0, _driver.FindElements(By.XPath("/html/body/div/div/main/a[4]")).Count);
         }
 
         [TestCleanup]
         public void EdgeDriverCleanup()
         {
-            driver.Quit();
+            _driver.Quit();
         }
     }
 }
