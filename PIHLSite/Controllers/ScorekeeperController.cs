@@ -133,59 +133,68 @@ namespace PIHLSite.Controllers
                 {
                     return NotFound();
                 }
-                gameRecord.Finalized = true;
-                if (awayTeamRecord.TeamId == gameRecord.AwayTeamId)
+                if (gameRecord.Finalized == false)
                 {
-                    if (gameRecord.Overtime == false)
+                    gameRecord.Finalized = true;
+                    if (awayTeamRecord.TeamId == gameRecord.AwayTeamId)
                     {
-                        if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                        if (game.Overtime == false)
                         {
-                            awayTeamRecord.Win++;
-                            homeTeamRecord.Loss++;
-                        }
-                        else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
-                        {
-                            awayTeamRecord.Loss++;
-                            homeTeamRecord.Win++;
+                            if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Win++;
+                                homeTeamRecord.Loss++;
+                            }
+                            else if (gameRecord.AwayScoreTotal < gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Loss++;
+                                homeTeamRecord.Win++;
+                            }
+                            else
+                            {
+                                return RedirectToAction(nameof(Index));
+                            }
                         }
                         else
                         {
-                            return RedirectToAction(nameof(Index));
+                            gameRecord.Overtime = true;
+                            if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
+                            {
+                                awayTeamRecord.Win++;
+                                homeTeamRecord.Otl++;
+                            }
+                            else
+                            {
+                                awayTeamRecord.Otl++;
+                                homeTeamRecord.Win++;
+                            }
                         }
                     }
-                    else
+                    try
                     {
-                        if (gameRecord.AwayScoreTotal > gameRecord.HomeScoreTotal)
-                        {
-                            awayTeamRecord.Win++;
-                            homeTeamRecord.Otl++;
-                        }
-                        else
-                        {
-                            awayTeamRecord.Otl++;
-                            homeTeamRecord.Win++;
-                        }
+                        _context.Update(gameRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(homeTeamRecord);
+                        await _context.SaveChangesAsync();
+
+                        _context.Update(awayTeamRecord);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        TempData["Message"] = "Game Finalized";
+                        return RedirectToAction("Index", "Scorekeeper");
                     }
                 }
-                try
+                else
                 {
-                    _context.Update(gameRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Update(homeTeamRecord);
-                    await _context.SaveChangesAsync();
-
-                    _context.Update(awayTeamRecord);
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception ex)
-                {
-
-                    return RedirectToAction(nameof(Index));
+                    TempData["Message"] = "This Game is already A Final Score";
+                    return RedirectToAction("Index", "Scorekeeper");
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AwayTeamId"] = new SelectList(_context.Teams,  "TeamId", "IDandName", game.AwayTeam.TeamId);
+            ViewData["AwayTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.AwayTeam.TeamId);
             ViewData["HomeTeamId"] = new SelectList(_context.Teams, "TeamId", "IDandName", game.HomeTeam.TeamId);
             return View(game);
         }
