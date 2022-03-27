@@ -54,13 +54,22 @@ namespace PIHLSite.Controllers
 
         // GET: Goal/Create
         [Authorize]
-        public IActionResult Create()
+        public IActionResult Create(int id)
         {
-            ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-            ViewData["GameId"] = new SelectList(_context.Games, "GameId", "GameId");
-            ViewData["ScoringPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-            ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players, "PlayerId", "NameandNumber");
-            return View();
+            var gameRecord = _context.Set<Game>().FirstOrDefault(o => o.GameId == id);
+            if (gameRecord.Finalized != true)
+            {
+                ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["GameId"] = gameRecord.GameId;
+                ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                return View();
+            }
+            else
+            {
+                TempData["Message"] = "Finalized games cannot have Additional goals";
+                return RedirectToAction("Index", "Scorekeeper");
+            }
         }
 
         // POST: Goal/Create
@@ -95,6 +104,51 @@ namespace PIHLSite.Controllers
                     ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                     ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
                     return View();
+                }
+            }
+            else
+            {
+                if(firstAssistRecord != null)
+                {
+                    if (firstAssistRecord.TeamId != scoringPlayerRecord.TeamId)
+                    {
+                        TempData["Message"] = "The scoring player and the assisting players must be on the same team";
+                        ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["GameId"] = gameRecord.GameId;
+                        ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        return View();
+                    }
+                    if (scoringPlayerRecord.PlayerId == firstAssistRecord.PlayerId)
+                    {
+                        TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
+                        ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["GameId"] = gameRecord.GameId;
+                        ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        return View();
+                    }
+                }
+                else if(secondAssistRecord != null)
+                {
+                    if (secondAssistRecord.TeamId != scoringPlayerRecord.TeamId)
+                    {
+                        TempData["Message"] = "The scoring player and the assisting players must be on the same team";
+                        ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["GameId"] = gameRecord.GameId;
+                        ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        return View();
+                    }
+                    if (scoringPlayerRecord.PlayerId == secondAssistRecord.PlayerId)
+                    {
+                        TempData["Message"] = "The scoring player and the assisting players cannot be the same person";
+                        ViewData["FirstAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["GameId"] = gameRecord.GameId;
+                        ViewData["ScoringPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        ViewData["SecondAssistPlayerId"] = new SelectList(_context.Players.Where(x => x.TeamId == gameRecord.HomeTeamId || x.TeamId == gameRecord.AwayTeamId).Include(x => x.Team).OrderBy(x => x.Team), "PlayerId", "NameandNumber");
+                        return View();
+                    }
                 }
             }
 
