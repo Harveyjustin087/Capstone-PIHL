@@ -1,6 +1,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Support.UI;
+using System;
+using System.Collections.Generic;
 
 namespace SeleniumTests
 {
@@ -11,31 +15,40 @@ namespace SeleniumTests
         // please follow the instructions from http://go.microsoft.com/fwlink/?LinkId=619687
         // to install Microsoft WebDriver.
 
-        private EdgeDriver _driver;
+        IWebDriver driver;
+        WebDriverWait wait;
+        private Dictionary<string, string> testUserFixture = new Dictionary<string, string>();
 
-        [TestInitialize]
-        public void EdgeDriverInitialize()
+        [OneTimeSetUp]
+        public void SetUpTheFixture()
         {
-            // Initialize edge driver 
-            var options = new EdgeOptions
-            {
-                PageLoadStrategy = PageLoadStrategy.Normal
-            };
-            _driver = new EdgeDriver(options);
+            testUserFixture.Add("UserName", "testUser");
+            testUserFixture.Add("FirstName", "John");
+            testUserFixture.Add("LastName", "Doe");
+            testUserFixture.Add("Email", "j_doe@test.com");
+            testUserFixture.Add("Password", "aA1234*");
+            testUserFixture.Add("ConfirmPassword", "aA1234*");
         }
 
-        [TestMethod]
-        public void VerifyPageTitle()
+        [SetUp]
+        public void Setup()
         {
-            // Replace with your own test logic
-            _driver.Url = "https://www.bing.com";
-            Assert.AreEqual("Bing", _driver.Title);
+            driver = new EdgeDriver();
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            driver.Navigate().GoToUrl("http://localhost:5000");
+        }
+
+        [Test, Order(1)]
+        public void TestDoesNotShowPagesContentToUnauthorizedUsers()
+        {
+            driver.FindElement(By.LinkText("Profile")).Click();
+            wait.Until(webDriver => webDriver.FindElement(By.Id("Unauthorized_View")).Displayed);
         }
 
         [TestCleanup]
         public void EdgeDriverCleanup()
         {
-            _driver.Quit();
+            driver.Quit();
         }
     }
 }
