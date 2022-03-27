@@ -34,6 +34,7 @@ namespace PIHLSite
             services.AddDbContext<PIHLDBContext>(Options => Options.UseSqlServer(Configuration.GetConnectionString("PIHLContextConnection")));
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IMailService, MailService>();
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Identity/Account/ScorekeeperLogin");
 
         }
 
