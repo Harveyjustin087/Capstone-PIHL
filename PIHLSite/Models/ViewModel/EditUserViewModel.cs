@@ -15,13 +15,14 @@ namespace PIHLSite.Models.ViewModel
         public string FirstName { get; set; }
         [Required]
         [DataType(DataType.Text)]
-        [Display(Name = "LastName")]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
+        [Display(Name = "User Name")]
         public string UserName { get; set; }
 
         [Required]
