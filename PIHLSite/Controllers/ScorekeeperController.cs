@@ -65,12 +65,12 @@ namespace PIHLSite.Controllers
         [Authorize]
         public async Task<IActionResult> Create([Bind("GameId,GameDate,HomeScoreTotal,AwayScoreTotal,AwayTeamId,HomeTeamId,Finalized,Overtime")] Game game)
         {
-            if ((game.AwayTeamId >= 6) || (game.AwayTeamId <= 0)) 
+            if ((game.AwayTeamId > 6) || (game.AwayTeamId <= 0)) 
             {
                 TempData["Message"] = "There are only 6 Teams in the League";
                 return RedirectToAction("Index", "Scorekeeper");
             }
-            if((game.HomeTeamId >= 6) || (game.HomeTeamId<= 0))
+            if((game.HomeTeamId > 6) || (game.HomeTeamId<= 0))
             {
                 TempData["Message"] = "There are only 6 Teams in the League";
                 return RedirectToAction("Index", "Scorekeeper");
